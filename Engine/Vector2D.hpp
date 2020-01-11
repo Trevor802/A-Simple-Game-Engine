@@ -7,6 +7,7 @@
 //
 #pragma once
 #include <iostream>
+#include "BasicTypes.h"
 
 class Vector2D {
 public:
@@ -31,6 +32,8 @@ public:
     inline Vector2D& operator*=(const float a);
 
     inline bool operator==(const Vector2D& a) const;
+
+    inline GLib::Point2D ToPoint2D() const;
     
     static bool InArray(const Vector2D array[], const int size, const Vector2D v);
     

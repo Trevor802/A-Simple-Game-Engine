@@ -9,7 +9,7 @@
 #include "Monster.hpp"
 #include <iostream>
 
-Monster::Monster(const Vector2D& position, const string name, const int deathTurn) : Actor(position, name){
+Monster::Monster(const Vector2D& position, const string name, const int deathTurn) : GameObject(position, name){
     this->deathTurn = deathTurn;
     this->active = true;
 }

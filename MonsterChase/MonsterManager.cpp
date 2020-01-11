@@ -66,7 +66,7 @@ void MonsterManager::update() {
     }
 }
 
-void MonsterManager::SetPlayer(Actor *i_pPlayer){
+void MonsterManager::SetPlayer(GameObject *i_pPlayer){
     m_pPlayer = i_pPlayer;
     for (int i = 0; i < actorsCount; i++) {
         m_Controllers[i]->SetTarget(i_pPlayer);

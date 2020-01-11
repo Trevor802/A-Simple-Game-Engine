@@ -8,11 +8,11 @@
 
 #pragma once
 #include <stdio.h>
-#include "Actor.hpp"
+#include "GameObject.hpp"
 
 class IActorController{
 public:
-    virtual void SetActor(Actor* i_Actor) = 0;
+    virtual void SetActor(GameObject* i_Actor) = 0;
     virtual bool Update() = 0;
 };
 

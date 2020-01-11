@@ -1,8 +1,11 @@
+#pragma once
 #include <assert.h>
 #include <stdio.h>
 #include <stdint.h>
 #include <Windows.h>
-#include "Actor.hpp"
+#include "GameObject.hpp"
+#include "BaseComponent.h"
+#include "RendererComponent.h"
 
 #if defined _DEBUG
 #define _CRTDBG_MAP_ALLOC
@@ -15,7 +18,8 @@ void* LoadFile(const char* i_pFilename, size_t& o_sizeFile);
 GLib::Sprites::Sprite* CreateSprite(const char* i_pFilename, float i_Scale);
 
 static bool bQuit;
-static Vector2D m_HeroSpeed = Vector2D();
+static Vector2D m_velocity = Vector2D();
+const float m_speed = 0.1f;
 void TestKeyCallback(unsigned int i_VKeyID, bool bWentDown)
 {
 #ifdef _DEBUG
@@ -24,13 +28,13 @@ void TestKeyCallback(unsigned int i_VKeyID, bool bWentDown)
 	if (i_VKeyID == 0x51 && !bWentDown)
 		bQuit = true;
 	if (i_VKeyID == 0x57 && !bWentDown)
-		m_HeroSpeed = Vector2D(0, 1);
+		m_velocity = Vector2D(0, 1);
 	if (i_VKeyID == 0x53 && !bWentDown)
-		m_HeroSpeed = Vector2D(0, -1);
+		m_velocity = Vector2D(0, -1);
 	if (i_VKeyID == 0x41 && !bWentDown)
-		m_HeroSpeed = Vector2D(-1, 0);
+		m_velocity = Vector2D(-1, 0);
 	if (i_VKeyID == 0x44 && !bWentDown)
-		m_HeroSpeed = Vector2D(1, 0);
+		m_velocity = Vector2D(1, 0);
 	sprintf_s(Buffer, lenBuffer, "VKey 0x%04x went %s\n", i_VKeyID, bWentDown ? "down" : "up");
 	OutputDebugStringA(Buffer);
 
@@ -50,7 +54,22 @@ int WINAPI wWinMain(HINSTANCE i_hInstance, HINSTANCE i_hPrevInstance, LPWSTR i_l
 		// Create a couple of sprites using our own helper routine CreateSprite
 		GLib::Sprites::Sprite* pGoodGuy = CreateSprite("Sprites\\hero.dds", 0.5f);
 		GLib::Sprites::Sprite* pBadGuy = CreateSprite("Sprites\\slime.dds", 0.2f);
-		Actor* pHero = new Actor(Vector2D(), "trevor");
+		GameObject* pHero = new GameObject(Vector2D(), "trevor");
+		GameObject* pSlime = new GameObject(Vector2D(100, 100), "slime");
+
+#pragma region Initialize
+		if (pGoodGuy) {
+			RendererComponent* pRendererComp = new RendererComponent(pHero);
+			pRendererComp->SetSprite(pGoodGuy);
+			pHero->AddComponent<RendererComponent>(pRendererComp);
+		}
+		if (pBadGuy) {
+			RendererComponent* pRendererComp = new RendererComponent(pSlime);
+			pRendererComp->SetSprite(pBadGuy);
+			pSlime->AddComponent<RendererComponent>(pRendererComp);
+		}
+#pragma endregion
+
 
 		do
 		{
@@ -66,39 +85,21 @@ int WINAPI wWinMain(HINSTANCE i_hInstance, HINSTANCE i_hPrevInstance, LPWSTR i_l
 
 				if (pGoodGuy)
 				{
-					static float			moveDist = .01f;
-					static float			moveDir = moveDist;
-
-					static GLib::Point2D	Offset = { pHero->GetPosition().x, pHero->GetPosition().y };
-
-					/*if (Offset.x < -220.0f)
-						moveDir = moveDist;
-					else if (Offset.x > -140.0f)
-						moveDir = -moveDist;
-
-					Offset.x += moveDir;*/
-					pHero->Move(m_HeroSpeed * 0.01f);
-					Offset = { pHero->GetPosition().x, pHero->GetPosition().y };
-					
-					// Tell GLib to render this sprite at our calculated location
-					GLib::Sprites::RenderSprite(*pGoodGuy, Offset, 0.0f);
+					pHero->Move(m_velocity * m_speed);
+					pHero->Update();
 				}
 				if (pBadGuy)
 				{
 					static float			moveDist = .02f;
 					static float			moveDir = -moveDist;
 
-					static GLib::Point2D	Offset = { 180.0f, -100.0f };
-
-					if (Offset.x > 200.0f)
+					if (pSlime->GetPosition().x > 200.0f)
 						moveDir = -moveDist;
-					else if (Offset.x < 160.0f)
+					else if (pSlime->GetPosition().x < 160.0f)
 						moveDir = moveDist;
 
-					Offset.x += moveDir;
-
-					// Tell GLib to render this sprite at our calculated location
-					GLib::Sprites::RenderSprite(*pBadGuy, Offset, 0.0f);
+					pSlime->Move(Vector2D(moveDir, 0));
+					pSlime->Update();
 				}
 
 				// Tell GLib we're done rendering sprites

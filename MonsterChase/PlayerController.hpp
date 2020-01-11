@@ -16,11 +16,11 @@ class PlayerController : public IActorController{
 public:
     PlayerController(const Grid& i_Grid) { m_Grid = i_Grid; }
     ~PlayerController();
-    void SetActor(Actor* i_Actor) override { m_Player = i_Actor; }
+    void SetActor(GameObject* i_Actor) override { m_Player = i_Actor; }
     bool Update() override;
     
 private:
-    Actor* m_Player;
+    GameObject* m_Player;
     Grid m_Grid;
 };
 

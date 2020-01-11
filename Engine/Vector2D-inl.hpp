@@ -43,4 +43,8 @@ inline Vector2D& Vector2D::operator*=(const float a) {
     return *this;
 }
 
+inline GLib::Point2D Vector2D::ToPoint2D() const {
+    return GLib::Point2D{ this->x, this->y };
+}
+
 #endif /* Vector2D_inl_hpp */

@@ -9,9 +9,9 @@
 #ifndef Monster_hpp
 #define Monster_hpp
 
-#include "Actor.hpp"
+#include "GameObject.hpp"
 
-class Monster : public Actor {
+class Monster : public GameObject {
 public:
     Monster(void){};
     Monster(const Vector2D& position, const string name, const int deathTurn);

@@ -9,7 +9,7 @@
 #include "MonsterController.hpp"
 #include <iostream>
 
-void MonsterController::SetActor(Actor *i_Actor){
+void MonsterController::SetActor(GameObject *i_Actor){
     m_pMonster = dynamic_cast<Monster*>(i_Actor);
 }
 

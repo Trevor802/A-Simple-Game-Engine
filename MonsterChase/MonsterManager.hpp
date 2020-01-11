@@ -24,13 +24,13 @@ public:
     void update();
     Monster* spawn(const Vector2D& pos);
     Monster* spawn(const Vector2D& pos, const string name);
-    void SetPlayer(Actor* i_pPlayer);
+    void SetPlayer(GameObject* i_pPlayer);
 private:
     void destroy(const int index);
     int actorsCount;
     string name;
     MonsterController** m_Controllers = new MonsterController*[MAX_MONSTERS]();
     Grid grid;
-    Actor* m_pPlayer;
+    GameObject* m_pPlayer;
 };
 
