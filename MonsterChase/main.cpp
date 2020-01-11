@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <Windows.h>
+#include "Actor.hpp"
 
 #if defined _DEBUG
 #define _CRTDBG_MAP_ALLOC
@@ -11,16 +12,28 @@
 #include "GLib.h"
 
 void* LoadFile(const char* i_pFilename, size_t& o_sizeFile);
-GLib::Sprites::Sprite* CreateSprite(const char* i_pFilename);
+GLib::Sprites::Sprite* CreateSprite(const char* i_pFilename, float i_Scale);
 
+static bool bQuit;
+static Vector2D m_HeroSpeed = Vector2D();
 void TestKeyCallback(unsigned int i_VKeyID, bool bWentDown)
 {
 #ifdef _DEBUG
 	const size_t	lenBuffer = 65;
 	char			Buffer[lenBuffer];
-
+	if (i_VKeyID == 0x51 && !bWentDown)
+		bQuit = true;
+	if (i_VKeyID == 0x57 && !bWentDown)
+		m_HeroSpeed = Vector2D(0, 1);
+	if (i_VKeyID == 0x53 && !bWentDown)
+		m_HeroSpeed = Vector2D(0, -1);
+	if (i_VKeyID == 0x41 && !bWentDown)
+		m_HeroSpeed = Vector2D(-1, 0);
+	if (i_VKeyID == 0x44 && !bWentDown)
+		m_HeroSpeed = Vector2D(1, 0);
 	sprintf_s(Buffer, lenBuffer, "VKey 0x%04x went %s\n", i_VKeyID, bWentDown ? "down" : "up");
 	OutputDebugStringA(Buffer);
+
 #endif // __DEBUG
 }
 
@@ -35,10 +48,9 @@ int WINAPI wWinMain(HINSTANCE i_hInstance, HINSTANCE i_hPrevInstance, LPWSTR i_l
 		GLib::SetKeyStateChangeCallback(TestKeyCallback);
 
 		// Create a couple of sprites using our own helper routine CreateSprite
-		GLib::Sprites::Sprite* pGoodGuy = CreateSprite("data\\GoodGuy.dds");
-		GLib::Sprites::Sprite* pBadGuy = CreateSprite("data\\BadGuy.dds");
-
-		bool bQuit = false;
+		GLib::Sprites::Sprite* pGoodGuy = CreateSprite("Sprites\\hero.dds", 0.5f);
+		GLib::Sprites::Sprite* pBadGuy = CreateSprite("Sprites\\slime.dds", 0.2f);
+		Actor* pHero = new Actor(Vector2D(), "trevor");
 
 		do
 		{
@@ -57,15 +69,17 @@ int WINAPI wWinMain(HINSTANCE i_hInstance, HINSTANCE i_hPrevInstance, LPWSTR i_l
 					static float			moveDist = .01f;
 					static float			moveDir = moveDist;
 
-					static GLib::Point2D	Offset = { -180.0f, -100.0f };
+					static GLib::Point2D	Offset = { pHero->GetPosition().x, pHero->GetPosition().y };
 
-					if (Offset.x < -220.0f)
+					/*if (Offset.x < -220.0f)
 						moveDir = moveDist;
 					else if (Offset.x > -140.0f)
 						moveDir = -moveDist;
 
-					Offset.x += moveDir;
-
+					Offset.x += moveDir;*/
+					pHero->Move(m_HeroSpeed * 0.01f);
+					Offset = { pHero->GetPosition().x, pHero->GetPosition().y };
+					
 					// Tell GLib to render this sprite at our calculated location
 					GLib::Sprites::RenderSprite(*pGoodGuy, Offset, 0.0f);
 				}
@@ -101,6 +115,7 @@ int WINAPI wWinMain(HINSTANCE i_hInstance, HINSTANCE i_hPrevInstance, LPWSTR i_l
 
 		// IMPORTANT:  Tell GLib to shutdown, releasing resources.
 		GLib::Shutdown();
+		delete pHero;
 	}
 
 #if defined _DEBUG
@@ -109,7 +124,7 @@ int WINAPI wWinMain(HINSTANCE i_hInstance, HINSTANCE i_hPrevInstance, LPWSTR i_l
 
 }
 
-GLib::Sprites::Sprite* CreateSprite(const char* i_pFilename)
+GLib::Sprites::Sprite* CreateSprite(const char* i_pFilename, float i_Scale = 1.0f)
 {
 	assert(i_pFilename);
 
@@ -139,7 +154,7 @@ GLib::Sprites::Sprite* CreateSprite(const char* i_pFilename)
 	assert((width > 0) && (height > 0));
 
 	// Define the sprite edges
-	GLib::Sprites::SpriteEdges	Edges = { -float(width / 2.0f), float(height), float(width / 2.0f), 0.0f };
+	GLib::Sprites::SpriteEdges	Edges = { -float(width / 2.0f * i_Scale), float(height * i_Scale), float(width / 2.0f * i_Scale), 0.0f };
 	GLib::Sprites::SpriteUVs	UVs = { { 0.0f, 0.0f }, { 1.0f, 0.0f }, { 0.0f, 1.0f }, { 1.0f, 1.0f } };
 	GLib::RGBA							Color = { 255, 255, 255, 255 };
 
@@ -309,14 +324,14 @@ void Test()
 
 
 
-////
-////  main.cpp
-////  GhostChaser
-////
-////  Created by Trevor Alex on 8/27/19.
-////  Copyright © 2019 Trevor Alex. All rights reserved.
-////
 //
+//  main.cpp
+//  GhostChaser
+//
+//  Created by Trevor Alex on 8/27/19.
+//  Copyright © 2019 Trevor Alex. All rights reserved.
+//
+
 //#include <iostream>
 //#include <ctime>
 //#include <string>

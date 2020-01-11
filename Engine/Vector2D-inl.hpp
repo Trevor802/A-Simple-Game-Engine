@@ -33,4 +33,14 @@ inline Vector2D& Vector2D::operator-=(const Vector2D& a){
     return *this;
 }
 
+inline Vector2D Vector2D::operator*(const float a) const {
+    return Vector2D{ this->x * a, this->y * a };
+}
+
+inline Vector2D& Vector2D::operator*=(const float a) {
+    this->x = x * a;
+    this->y = y * a;
+    return *this;
+}
+
 #endif /* Vector2D_inl_hpp */

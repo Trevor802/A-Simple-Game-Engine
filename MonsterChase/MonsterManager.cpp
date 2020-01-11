@@ -51,7 +51,7 @@ void MonsterManager::update() {
         m_Controllers[i]->Update();
     };
     // Create monsters
-    Vector2D* grids = new Vector2D[this->grid.width * this->grid.height];
+    Vector2D* grids = new Vector2D[size_t(floor(this->grid.width)) * size_t(floor(this->grid.height))];
     int overlappingCount = 0;
     for (int i = 0; i < actorsCount - 1; i++) {
         for (int j = i + 1; j < actorsCount; j++) {

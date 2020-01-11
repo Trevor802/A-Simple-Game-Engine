@@ -17,8 +17,8 @@ bool Vector2D::InArray(const Vector2D array[], const int size, const Vector2D v)
     return false;
 }
 
-Vector2D Vector2D::RandInArea(const int width, const int height){
-    return Vector2D(rand() % width, rand() % height);
+Vector2D Vector2D::RandInArea(const float width, const float height){
+    return Vector2D((float)rand() / (float)RAND_MAX * width, (float)rand() / (float)RAND_MAX * height);
 }
 
 Vector2D Vector2D::RandDir(){

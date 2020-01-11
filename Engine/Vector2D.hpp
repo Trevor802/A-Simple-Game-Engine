@@ -10,10 +10,10 @@
 
 class Vector2D {
 public:
-    int x;
-    int y;
+    float x;
+    float y;
     
-    Vector2D(int x=0, int y=0):x(x),y(y)
+    Vector2D(float x=0, float y=0):x(x),y(y)
     {
         
     }
@@ -26,11 +26,15 @@ public:
     
     inline Vector2D& operator-=(const Vector2D& a);
     
+    inline Vector2D operator*(const float a) const;
+
+    inline Vector2D& operator*=(const float a);
+
     inline bool operator==(const Vector2D& a) const;
     
     static bool InArray(const Vector2D array[], const int size, const Vector2D v);
     
-    static Vector2D RandInArea(const int width, const int height);
+    static Vector2D RandInArea(const float width, const float height);
     
     static Vector2D RandDir();
     

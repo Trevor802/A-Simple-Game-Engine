@@ -14,9 +14,9 @@
 class Grid{
 public:
     Grid(){};
-    Grid(const int x, const int y, const int width, const int height) : x(x), y(y), width(width), height(height), origin(Vector2D(x, y)), size(Vector2D(width, height)){};
+    Grid(const float x, const float y, const float width, const float height) : x(x), y(y), width(width), height(height), origin(Vector2D(x, y)), size(Vector2D(width, height)){};
     ~Grid();
-    int x, y, width, height;
+    float x, y, width, height;
     Vector2D origin, size;
     Vector2D move(const Vector2D& start, const Vector2D& offset);
 };
