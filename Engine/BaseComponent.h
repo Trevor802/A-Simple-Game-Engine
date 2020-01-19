@@ -7,7 +7,7 @@ public:
 	//BaseComponent() {};
 	BaseComponent(GameObject* i_pGameObject) : gameObject(i_pGameObject) {};
 	virtual ~BaseComponent() {};
-	virtual void Update() {};
+	virtual void Update(float DeltaTime) {};
 
 public:
 	GameObject* gameObject;

@@ -5,7 +5,7 @@ class RendererComponent : public BaseComponent
 {
 public:
 	RendererComponent(GameObject* i_pGameObject) : BaseComponent(i_pGameObject) {};
-	void Update() override;
+	void Update(float DeltaTime) override;
 	inline void SetSprite(GLib::Sprites::Sprite* const i_pSprite) { m_pSprite = i_pSprite; }
 
 private:

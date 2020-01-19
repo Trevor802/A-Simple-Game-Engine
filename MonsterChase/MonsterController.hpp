@@ -21,7 +21,7 @@ public:
     ~MonsterController();
     void SetActor(GameObject *i_pActor) override;
     void SetTarget(GameObject* i_pPlayer) { m_pPlayer = i_pPlayer; }
-    bool Update() override;
+    bool Update(float DeltaTime) override;
     Monster* GetMonster() const { return m_pMonster; }
     
 private:

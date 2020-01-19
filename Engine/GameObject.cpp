@@ -16,9 +16,9 @@ GameObject::~GameObject() {
     
 }
 
-void GameObject::Update() {
+void GameObject::Update(float DeltaTime) {
 	for (auto it = m_Components.begin(); it != m_Components.end(); it++)
 	{
-		it->get()->Update();
+		it->get()->Update(DeltaTime);
 	}
 }

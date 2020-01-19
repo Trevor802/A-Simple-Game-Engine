@@ -86,7 +86,7 @@ int WINAPI wWinMain(HINSTANCE i_hInstance, HINSTANCE i_hPrevInstance, LPWSTR i_l
 				if (pGoodGuy)
 				{
 					pHero->Move(m_velocity * m_speed);
-					pHero->Update();
+					pHero->Update(0);
 				}
 				if (pBadGuy)
 				{
@@ -99,7 +99,7 @@ int WINAPI wWinMain(HINSTANCE i_hInstance, HINSTANCE i_hPrevInstance, LPWSTR i_l
 						moveDir = moveDist;
 
 					pSlime->Move(Vector2D(moveDir, 0));
-					pSlime->Update();
+					pSlime->Update(0);
 				}
 
 				// Tell GLib we're done rendering sprites

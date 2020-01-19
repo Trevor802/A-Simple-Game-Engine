@@ -21,7 +21,7 @@ class MonsterManager{
 public:
     MonsterManager(const string name, const int initCount, const Grid& grid);
     ~MonsterManager();
-    void update();
+    void Update(float DeltaTime);
     Monster* spawn(const Vector2D& pos);
     Monster* spawn(const Vector2D& pos, const string name);
     void SetPlayer(GameObject* i_pPlayer);

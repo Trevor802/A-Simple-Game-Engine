@@ -17,7 +17,7 @@ public:
     PlayerController(const Grid& i_Grid) { m_Grid = i_Grid; }
     ~PlayerController();
     void SetActor(GameObject* i_Actor) override { m_Player = i_Actor; }
-    bool Update() override;
+    bool Update(float DeltaTime) override;
     
 private:
     GameObject* m_Player;

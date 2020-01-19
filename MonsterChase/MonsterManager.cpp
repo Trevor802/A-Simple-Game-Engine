@@ -45,10 +45,10 @@ MonsterManager::MonsterManager(const string name, const int initCount, const Gri
     }
 }
 
-void MonsterManager::update() {
+void MonsterManager::Update(float DeltaTime) {
     // Move monsters
     for (int i = 0; i < actorsCount; i++) {
-        m_Controllers[i]->Update();
+        m_Controllers[i]->Update(0);
     };
     // Create monsters
     Vector2D* grids = new Vector2D[size_t(floor(this->grid.width)) * size_t(floor(this->grid.height))];

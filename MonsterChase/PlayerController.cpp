@@ -10,7 +10,7 @@
 #include <iostream>
 #include <conio.h>
 
-bool PlayerController::Update() {
+bool PlayerController::Update(float DeltaTime) {
     int input = _getch();
     Vector2D move;
     cout << "\n";

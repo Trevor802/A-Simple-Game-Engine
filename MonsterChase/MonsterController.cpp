@@ -13,7 +13,7 @@ void MonsterController::SetActor(GameObject *i_Actor){
     m_pMonster = dynamic_cast<Monster*>(i_Actor);
 }
 
-bool MonsterController::Update(){
+bool MonsterController::Update(float DeltaTime){
     if (!m_pMonster->active) return false;
     Vector2D dir;
     switch (m_MovingStrategy) {

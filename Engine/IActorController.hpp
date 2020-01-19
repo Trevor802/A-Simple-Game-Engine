@@ -13,6 +13,6 @@
 class IActorController{
 public:
     virtual void SetActor(GameObject* i_Actor) = 0;
-    virtual bool Update() = 0;
+    virtual bool Update(float DeltaTime) = 0;
 };
 
