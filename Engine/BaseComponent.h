@@ -4,8 +4,7 @@ class GameObject;
 class BaseComponent
 {
 public:
-	//BaseComponent() {};
-	BaseComponent(GameObject* i_pGameObject) : gameObject(i_pGameObject) {};
+	BaseComponent() {};
 	virtual ~BaseComponent() {};
 	virtual void Update(float DeltaTime) {};
 

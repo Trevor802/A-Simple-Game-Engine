@@ -38,6 +38,10 @@ public:
     };
     template <typename T>
     inline T* AddComponent(T* i_pComponent);
+
+    template <typename T>
+    T* GetComponent();
 };
 
 #include "GameObject-inl.h"
+#include "GameObject-tmpl.h"

@@ -55,6 +55,11 @@ Vector2D Vector2D::Clamp(const Vector2D& a, const Vector2D& min_v, const Vector2
     return v;
 }
 
+float Vector2D::Dot(const Vector2D& i_lhs, const Vector2D& i_rhs)
+{
+    return i_lhs.x * i_rhs.x + i_lhs.y * i_rhs.y;
+}
+
 bool Vector2D::clamp(const Vector2D& min_v, const Vector2D& max_v){
     if (x >= min_v.x && x < max_v.x && y >= min_v.y && y < max_v.y)
         return false;

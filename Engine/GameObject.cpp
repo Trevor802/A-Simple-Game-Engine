@@ -6,6 +6,7 @@
 //  Copyright © 2019 Trevor Alex. All rights reserved.
 //
 
+#pragma once
 #include "GameObject.hpp"
 
 GameObject::GameObject(void){

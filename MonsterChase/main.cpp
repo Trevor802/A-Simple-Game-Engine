@@ -2,10 +2,15 @@
 #include <assert.h>
 #include <stdio.h>
 #include <stdint.h>
+#include <ctime>
+#include <cstring>
 #include <Windows.h>
+#include <iostream>
+#include <chrono>
 #include "GameObject.hpp"
 #include "BaseComponent.h"
 #include "RendererComponent.h"
+#include "PhysicsComponent.h"
 
 #if defined _DEBUG
 #define _CRTDBG_MAP_ALLOC
@@ -14,12 +19,14 @@
 
 #include "GLib.h"
 
+using namespace std;
+
 void* LoadFile(const char* i_pFilename, size_t& o_sizeFile);
 GLib::Sprites::Sprite* CreateSprite(const char* i_pFilename, float i_Scale);
 
 static bool bQuit;
-static Vector2D m_velocity = Vector2D();
-const float m_speed = 0.1f;
+static Vector2D m_input = Vector2D();
+const float m_speed = 100.0f;
 void TestKeyCallback(unsigned int i_VKeyID, bool bWentDown)
 {
 #ifdef _DEBUG
@@ -27,14 +34,16 @@ void TestKeyCallback(unsigned int i_VKeyID, bool bWentDown)
 	char			Buffer[lenBuffer];
 	if (i_VKeyID == 0x51 && !bWentDown)
 		bQuit = true;
-	if (i_VKeyID == 0x57 && !bWentDown)
-		m_velocity = Vector2D(0, 1);
-	if (i_VKeyID == 0x53 && !bWentDown)
-		m_velocity = Vector2D(0, -1);
-	if (i_VKeyID == 0x41 && !bWentDown)
-		m_velocity = Vector2D(-1, 0);
-	if (i_VKeyID == 0x44 && !bWentDown)
-		m_velocity = Vector2D(1, 0);
+	if (i_VKeyID == 0x57 && bWentDown)
+		m_input = Vector2D(0, 1);
+	if (i_VKeyID == 0x53 && bWentDown)
+		m_input = Vector2D(0, -1);
+	if (i_VKeyID == 0x41 && bWentDown)
+		m_input = Vector2D(-1, 0);
+	if (i_VKeyID == 0x44 && bWentDown)
+		m_input = Vector2D(1, 0);
+	if (!bWentDown)
+		m_input = Vector2D();
 	sprintf_s(Buffer, lenBuffer, "VKey 0x%04x went %s\n", i_VKeyID, bWentDown ? "down" : "up");
 	OutputDebugStringA(Buffer);
 
@@ -45,6 +54,8 @@ int WINAPI wWinMain(HINSTANCE i_hInstance, HINSTANCE i_hPrevInstance, LPWSTR i_l
 {
 	// IMPORTANT: first we need to initialize GLib
 	bool bSuccess = GLib::Initialize(i_hInstance, i_nCmdShow, "GLibTest", -1, 800, 600);
+	auto oldTime = chrono::high_resolution_clock::now();
+	float deltaTime;
 
 	if (bSuccess)
 	{
@@ -59,23 +70,30 @@ int WINAPI wWinMain(HINSTANCE i_hInstance, HINSTANCE i_hPrevInstance, LPWSTR i_l
 
 #pragma region Initialize
 		if (pGoodGuy) {
-			RendererComponent* pRendererComp = new RendererComponent(pHero);
+			RendererComponent* pRendererComp = new RendererComponent();
 			pRendererComp->SetSprite(pGoodGuy);
+			PhysicsComponent* pPhysicsComp = new PhysicsComponent();
+			pPhysicsComp->bUseGravity = true;
+			pHero->AddComponent<PhysicsComponent>(pPhysicsComp);
 			pHero->AddComponent<RendererComponent>(pRendererComp);
 		}
 		if (pBadGuy) {
-			RendererComponent* pRendererComp = new RendererComponent(pSlime);
+			RendererComponent* pRendererComp = new RendererComponent();
 			pRendererComp->SetSprite(pBadGuy);
+			PhysicsComponent* pPhysicsComp = new PhysicsComponent();
+			pPhysicsComp->bUseGravity = false;
+			pSlime->AddComponent<PhysicsComponent>(pPhysicsComp);
 			pSlime->AddComponent<RendererComponent>(pRendererComp);
 		}
 #pragma endregion
 
-
 		do
 		{
+			deltaTime = chrono::duration_cast<chrono::duration<float>>(chrono::high_resolution_clock::now() - oldTime).count();
+			oldTime = chrono::high_resolution_clock::now();
 			// IMPORTANT: We need to let GLib do it's thing. 
 			GLib::Service(bQuit);
-
+		
 			if (!bQuit)
 			{
 				// IMPORTANT: Tell GLib that we want to start rendering
@@ -85,12 +103,12 @@ int WINAPI wWinMain(HINSTANCE i_hInstance, HINSTANCE i_hPrevInstance, LPWSTR i_l
 
 				if (pGoodGuy)
 				{
-					pHero->Move(m_velocity * m_speed);
-					pHero->Update(0);
+					pHero->GetComponent<PhysicsComponent>()->AddForce(m_input * 1000.0f);
+					pHero->Update(deltaTime);
 				}
 				if (pBadGuy)
 				{
-					static float			moveDist = .02f;
+					static float			moveDist = 100.0f;
 					static float			moveDir = -moveDist;
 
 					if (pSlime->GetPosition().x > 200.0f)
@@ -98,8 +116,8 @@ int WINAPI wWinMain(HINSTANCE i_hInstance, HINSTANCE i_hPrevInstance, LPWSTR i_l
 					else if (pSlime->GetPosition().x < 160.0f)
 						moveDir = moveDist;
 
-					pSlime->Move(Vector2D(moveDir, 0));
-					pSlime->Update(0);
+					pSlime->GetComponent<PhysicsComponent>()->AddForce(Vector2D(moveDir, 0));
+					pSlime->Update(deltaTime);
 				}
 
 				// Tell GLib we're done rendering sprites
@@ -117,6 +135,7 @@ int WINAPI wWinMain(HINSTANCE i_hInstance, HINSTANCE i_hPrevInstance, LPWSTR i_l
 		// IMPORTANT:  Tell GLib to shutdown, releasing resources.
 		GLib::Shutdown();
 		delete pHero;
+		delete pSlime;
 	}
 
 #if defined _DEBUG
