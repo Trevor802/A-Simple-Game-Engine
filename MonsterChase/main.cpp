@@ -7,6 +7,7 @@
 #include <Windows.h>
 #include <iostream>
 #include <chrono>
+#include "SmartPtr.h"
 #include "GameObject.hpp"
 #include "BaseComponent.h"
 #include "RendererComponent.h"
@@ -18,6 +19,7 @@
 #endif // _DEBUG
 
 #include "GLib.h"
+
 
 using namespace std;
 
@@ -65,7 +67,8 @@ int WINAPI wWinMain(HINSTANCE i_hInstance, HINSTANCE i_hPrevInstance, LPWSTR i_l
 		// Create a couple of sprites using our own helper routine CreateSprite
 		GLib::Sprites::Sprite* pGoodGuy = CreateSprite("Sprites\\hero.dds", 0.5f);
 		GLib::Sprites::Sprite* pBadGuy = CreateSprite("Sprites\\slime.dds", 0.2f);
-		GameObject* pHero = new GameObject(Vector2D(), "trevor");
+		StrongPtr<GameObject> pHero = StrongPtr<GameObject>(new GameObject(Vector2D(), "trevor"));
+		//GameObject* pHero = new GameObject(Vector2D(), "trevor");
 		GameObject* pSlime = new GameObject(Vector2D(100, 100), "slime");
 
 #pragma region Initialize
@@ -134,7 +137,7 @@ int WINAPI wWinMain(HINSTANCE i_hInstance, HINSTANCE i_hPrevInstance, LPWSTR i_l
 
 		// IMPORTANT:  Tell GLib to shutdown, releasing resources.
 		GLib::Shutdown();
-		delete pHero;
+		//delete pHero;
 		delete pSlime;
 	}
 

@@ -19,7 +19,7 @@ inline char* Vector2D::ToString() const
 
 inline bool Vector2D::IsZero(float i_val) const
 {
-    return AreEqual(i_val, 0, .000000001f);
+    return AreEqual(i_val, 0, FLT_EPSILON);
 }
 
 inline bool Vector2D::operator==(const Vector2D& a) const {
