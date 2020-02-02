@@ -67,3 +67,4 @@ private:
 };
 
 #include "SmartPtr-inl.h"
+#include "SmartPtr-tmpl.h"

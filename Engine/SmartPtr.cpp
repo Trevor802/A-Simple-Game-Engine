@@ -21,11 +21,6 @@ StrongPtr<T>::StrongPtr(const StrongPtr<U>& i_other) : m_ptr(i_other.m_ptr), m_p
 }
 
 template<typename T>
-StrongPtr<T>::~StrongPtr() {
-	Release();
-}
-
-template<typename T>
 void StrongPtr<T>::operator=(std::nullptr_t i_nullptr) {
 	Release();
 }

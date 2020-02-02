@@ -20,7 +20,6 @@
 
 #include "GLib.h"
 
-
 using namespace std;
 
 void* LoadFile(const char* i_pFilename, size_t& o_sizeFile);
@@ -68,8 +67,7 @@ int WINAPI wWinMain(HINSTANCE i_hInstance, HINSTANCE i_hPrevInstance, LPWSTR i_l
 		GLib::Sprites::Sprite* pGoodGuy = CreateSprite("Sprites\\hero.dds", 0.5f);
 		GLib::Sprites::Sprite* pBadGuy = CreateSprite("Sprites\\slime.dds", 0.2f);
 		StrongPtr<GameObject> pHero = StrongPtr<GameObject>(new GameObject(Vector2D(), "trevor"));
-		//GameObject* pHero = new GameObject(Vector2D(), "trevor");
-		GameObject* pSlime = new GameObject(Vector2D(100, 100), "slime");
+		StrongPtr<GameObject> pSlime = StrongPtr<GameObject>(new GameObject(Vector2D(100, 100), "slime"));
 
 #pragma region Initialize
 		if (pGoodGuy) {
@@ -137,8 +135,6 @@ int WINAPI wWinMain(HINSTANCE i_hInstance, HINSTANCE i_hPrevInstance, LPWSTR i_l
 
 		// IMPORTANT:  Tell GLib to shutdown, releasing resources.
 		GLib::Shutdown();
-		//delete pHero;
-		delete pSlime;
 	}
 
 #if defined _DEBUG
