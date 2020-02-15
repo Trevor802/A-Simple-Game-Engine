@@ -15,9 +15,27 @@ StrongPtr<T>& StrongPtr<T>::operator=(const StrongPtr<U>& i_other) {
 }
 
 template<typename T>
+StrongPtr<T>& StrongPtr<T>::operator=(StrongPtr<T>&& i_other) {
+	if (&i_other == this)
+		return *this;
+	m_pRefCounter = i_other.m_pRefCounter;
+	m_ptr = i_other.m_ptr;
+	i_other.m_pRefCounter = nullptr;
+	i_other.m_ptr = nullptr;
+	return *this;
+}
+
+template<typename T>
 template<typename U>
 StrongPtr<T>::StrongPtr(const StrongPtr<U>& i_other) : m_ptr(i_other.m_ptr), m_pRefCounter(i_other.m_pRefCounter) {
 	m_pRefCounter->StrongRefCount++;
+}
+
+template<typename T>
+StrongPtr<T>::StrongPtr(StrongPtr<T>&& i_other) : m_ptr(i_other.m_ptr), m_pRefCounter(i_other.m_pRefCounter)
+{
+	i_other.m_ptr = nullptr;
+	i_other.m_pRefCounter = nullptr;
 }
 
 template<typename T>
@@ -40,6 +58,17 @@ WeakPtr<T>& WeakPtr<T>::operator=(const WeakPtr<U>& i_other) {
 }
 
 template<typename T>
+WeakPtr<T>& WeakPtr<T>::operator=(WeakPtr<T>&& i_other) {
+	if (&i_other == this)
+		return *this;
+	m_pRefCounter = i_other.m_pRefCounter;
+	m_ptr = i_other.m_ptr;
+	i_other.m_pRefCounter = nullptr;
+	i_other.m_ptr = nullptr;
+	return *this;
+}
+
+template<typename T>
 template<typename U>
 WeakPtr<T>::WeakPtr(const StrongPtr<U>& i_other) : m_ptr(i_other.m_ptr), m_pRefCounter(i_other.m_pRefCounter) {
 	m_pRefCounter->WeakRefCount++;
@@ -49,6 +78,13 @@ template<typename T>
 template<typename U>
 WeakPtr<T>::WeakPtr(const WeakPtr<U>& i_other) : m_ptr(i_other.m_ptr), m_pRefCounter(i_other.m_pRefCounter) {
 	m_pRefCounter->WeakRefCount++;
+}
+
+template<typename T>
+WeakPtr<T>::WeakPtr(WeakPtr<T>&& i_other) : m_ptr(i_other.m_ptr), m_pRefCounter(i_other.m_pRefCounter)
+{
+	i_other.m_ptr = nullptr;
+	i_other.m_pRefCounter = nullptr;
 }
 
 template<typename T>

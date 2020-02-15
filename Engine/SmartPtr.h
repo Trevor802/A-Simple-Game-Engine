@@ -18,8 +18,15 @@ public:
 	template<typename U>
 	StrongPtr(const StrongPtr<U>& i_other);
 
+	StrongPtr(StrongPtr<T>&& i_other);
+
 	template<typename U>
 	StrongPtr& operator=(const StrongPtr<U>& i_other);
+
+	StrongPtr& operator=(StrongPtr<T>&& i_other);
+
+	template<typename T>
+	friend class WeakPtr;
 
 	void operator=(std::nullptr_t i_nullptr);
 
@@ -48,8 +55,15 @@ public:
 	template<typename U>
 	WeakPtr(const WeakPtr<U>& i_other);
 
+	WeakPtr(WeakPtr<T>&& i_other);
+
 	template<typename U>
 	WeakPtr& operator=(const WeakPtr<U>& i_other);
+
+	WeakPtr& operator=(WeakPtr<T>&& i_other);
+
+	template<typename T>
+	friend class StrongPtr;
 
 	void operator=(std::nullptr_t i_nullptr);
 
