@@ -7,29 +7,36 @@
 //
 
 #pragma once
-#include "IActorController.hpp"
-#include "Monster.hpp"
-#include "Grid.hpp"
+#include "BaseComponent.h"
+#include "GameObject.hpp"
+#include "SmartPtr.h"
+#include "Vector2D.hpp"
+#include "json.hpp"
 
 enum MovingStrategy{
-    ChasePlayer, Random
+    ChaseTarget, 
+    Random, 
+    Patrol,
+    Invalid = -1
 };
 
-class MonsterController : public IActorController{
+NLOHMANN_JSON_SERIALIZE_ENUM(MovingStrategy, {
+    {ChaseTarget, "ChaseTarget"},
+    {Random, "Random"},
+    {Patrol, "Patrol"},
+    {Invalid, nullptr}
+})
+
+class MonsterController : public BaseComponent{
 public:
-    MonsterController(const Grid& i_Grid, const MovingStrategy& i_MovingStrategy = MovingStrategy::Random) : m_Grid(i_Grid), m_MovingStrategy(i_MovingStrategy){};
-    ~MonsterController();
-    void SetActor(GameObject *i_pActor) override;
-    void SetTarget(GameObject* i_pPlayer) { m_pPlayer = i_pPlayer; }
-    bool Update(float DeltaTime) override;
-    Monster* GetMonster() const { return m_pMonster; }
-    
+    MonsterController(MovingStrategy i_MovingStrategy = MovingStrategy::Random) : BaseComponent() { 
+        m_MovingStrategy = i_MovingStrategy; };
+    void Update(float DeltaTime) override;
+    inline void SetMovingStrategy(MovingStrategy i_MovingStrategy) { m_MovingStrategy = i_MovingStrategy; }
+    inline void SetTarget(StrongPtr<GameObject> i_Target) { m_Target = i_Target; }
+
 private:
-    Grid m_Grid;
-    Monster *m_pMonster;
-    GameObject* m_pPlayer;
+    Vector2D getMovingDirection();
     MovingStrategy m_MovingStrategy = MovingStrategy::Random;
-    
-    Vector2D chasingPlayerDirection() const;
-    Vector2D randomMovingDirection() const;
+    WeakPtr<GameObject> m_Target;
 };

@@ -20,7 +20,7 @@ public:
 	float Mass = 10;
 
 private:
-	const float Gravity = -9.8f;
+	const float Gravity = -49.0f;
 	Vector2D Velocity;
 	Vector2D Force;
 	Vector2D ExternalForce;

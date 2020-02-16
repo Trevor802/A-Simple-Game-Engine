@@ -11,4 +11,3 @@ public:
 public:
 	GameObject* gameObject;
 };
-

@@ -12,6 +12,10 @@
 #include "BaseComponent.h"
 #include "RendererComponent.h"
 #include "PhysicsComponent.h"
+#include "PlayerController.hpp"
+#include "MonsterController.hpp"
+#include <fstream>
+#include "json.hpp"
 
 #if defined _DEBUG
 #define _CRTDBG_MAP_ALLOC
@@ -21,6 +25,7 @@
 #include "GLib.h"
 
 using namespace std;
+using json = nlohmann::json;
 
 void* LoadFile(const char* i_pFilename, size_t& o_sizeFile);
 GLib::Sprites::Sprite* CreateSprite(const char* i_pFilename, float i_Scale);
@@ -63,11 +68,16 @@ int WINAPI wWinMain(HINSTANCE i_hInstance, HINSTANCE i_hPrevInstance, LPWSTR i_l
 		// IMPORTANT (if we want keypress info from GLib): Set a callback for notification of key presses
 		GLib::SetKeyStateChangeCallback(TestKeyCallback);
 
+		ifstream jFile ("objects.json");
+		json j;
+		jFile >> j;
+		jFile.close();
+		StrongPtr<GameObject> pHero = StrongPtr<GameObject>(new GameObject(Vector2D(), "trevor"));
+		StrongPtr<GameObject> pSlime = StrongPtr<GameObject>(new GameObject(Vector2D(j[0]["position"][0], j[0]["position"][1]), j[0]["name"]));
+
 		// Create a couple of sprites using our own helper routine CreateSprite
 		GLib::Sprites::Sprite* pGoodGuy = CreateSprite("Sprites\\hero.dds", 0.5f);
-		GLib::Sprites::Sprite* pBadGuy = CreateSprite("Sprites\\slime.dds", 0.2f);
-		StrongPtr<GameObject> pHero = StrongPtr<GameObject>(new GameObject(Vector2D(), "trevor"));
-		StrongPtr<GameObject> pSlime = StrongPtr<GameObject>(new GameObject(Vector2D(100, 100), "slime"));
+		GLib::Sprites::Sprite* pBadGuy = CreateSprite(j[0]["sprite"].get<string>().c_str(), j[0]["size"]);
 
 #pragma region Initialize
 		if (pGoodGuy) {
@@ -75,6 +85,7 @@ int WINAPI wWinMain(HINSTANCE i_hInstance, HINSTANCE i_hPrevInstance, LPWSTR i_l
 			pRendererComp->SetSprite(pGoodGuy);
 			PhysicsComponent* pPhysicsComp = new PhysicsComponent();
 			pPhysicsComp->bUseGravity = true;
+			pHero->AddComponent<PlayerController>(new PlayerController());
 			pHero->AddComponent<PhysicsComponent>(pPhysicsComp);
 			pHero->AddComponent<RendererComponent>(pRendererComp);
 		}
@@ -83,6 +94,9 @@ int WINAPI wWinMain(HINSTANCE i_hInstance, HINSTANCE i_hPrevInstance, LPWSTR i_l
 			pRendererComp->SetSprite(pBadGuy);
 			PhysicsComponent* pPhysicsComp = new PhysicsComponent();
 			pPhysicsComp->bUseGravity = false;
+			MonsterController* pController = new MonsterController(j[0]["controller"].get<MovingStrategy>());
+			pController->SetTarget(pHero);
+			pSlime->AddComponent<MonsterController>(pController);
 			pSlime->AddComponent<PhysicsComponent>(pPhysicsComp);
 			pSlime->AddComponent<RendererComponent>(pRendererComp);
 		}
@@ -104,20 +118,11 @@ int WINAPI wWinMain(HINSTANCE i_hInstance, HINSTANCE i_hPrevInstance, LPWSTR i_l
 
 				if (pGoodGuy)
 				{
-					pHero->GetComponent<PhysicsComponent>()->AddForce(m_input * 1000.0f);
+					pHero->GetComponent<PlayerController>()->SetInput(m_input);
 					pHero->Update(deltaTime);
 				}
 				if (pBadGuy)
 				{
-					static float			moveDist = 100.0f;
-					static float			moveDir = -moveDist;
-
-					if (pSlime->GetPosition().x > 200.0f)
-						moveDir = -moveDist;
-					else if (pSlime->GetPosition().x < 160.0f)
-						moveDir = moveDist;
-
-					pSlime->GetComponent<PhysicsComponent>()->AddForce(Vector2D(moveDir, 0));
 					pSlime->Update(deltaTime);
 				}
 

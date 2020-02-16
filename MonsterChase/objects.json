@@ -1,0 +1,9 @@
+[
+  {
+    "name": "slime",
+    "position": [ 100, 100 ],
+    "sprite": "Sprites\\slime.dds",
+    "size": 0.2,
+    "controller": "ChaseTarget"
+  }
+]

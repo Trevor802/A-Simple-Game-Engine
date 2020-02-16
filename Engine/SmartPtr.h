@@ -15,13 +15,11 @@ public:
 
 	~StrongPtr();
 
-	template<typename U>
-	StrongPtr(const StrongPtr<U>& i_other);
+	StrongPtr(const StrongPtr<T>& i_other);
 
 	StrongPtr(StrongPtr<T>&& i_other);
-
-	template<typename U>
-	StrongPtr& operator=(const StrongPtr<U>& i_other);
+	
+	StrongPtr& operator=(const StrongPtr<T>& i_other);
 
 	StrongPtr& operator=(StrongPtr<T>&& i_other);
 
@@ -47,18 +45,18 @@ class WeakPtr
 {
 public:
 	explicit WeakPtr(T* i_ptr = nullptr){}
-	template<typename U>
-	WeakPtr(const StrongPtr<U>& i_other);
+
+	WeakPtr(const StrongPtr<T>& i_other);
 
 	~WeakPtr();
 
-	template<typename U>
-	WeakPtr(const WeakPtr<U>& i_other);
+	WeakPtr(const WeakPtr<T>& i_other);
 
 	WeakPtr(WeakPtr<T>&& i_other);
 
-	template<typename U>
-	WeakPtr& operator=(const WeakPtr<U>& i_other);
+	WeakPtr& operator=(const StrongPtr<T>& i_other);
+
+	WeakPtr& operator=(const WeakPtr<T>& i_other);
 
 	WeakPtr& operator=(WeakPtr<T>&& i_other);
 

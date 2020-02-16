@@ -5,8 +5,10 @@
 //  Created by Trevor Alex on 9/8/19.
 //  Copyright © 2019 Trevor Alex. All rights reserved.
 //
+#define _USE_MATH_DEFINES
 
 #include "Vector2D.hpp"
+#include <math.h>
 
 bool Vector2D::InArray(const Vector2D array[], const int size, const Vector2D v){
     for(int i = 0; i < size; i++){
@@ -23,22 +25,9 @@ Vector2D Vector2D::RandInArea(const float width, const float height){
 
 Vector2D Vector2D::RandDir(){
     Vector2D v;
-    if (rand() < RAND_MAX / 2){
-        if (rand() < RAND_MAX / 2){
-            v.x = -1;
-        }
-        else{
-            v.x = 1;
-        }
-    }
-    else{
-        if (rand() < RAND_MAX / 2){
-            v.y = -1;
-        }
-        else{
-            v.y = 1;
-        }
-    }
+    double r = (double)rand() / RAND_MAX;
+    v.x = cos(2 * M_PI * r);
+    v.y = sin(2 * M_PI * r);
     return v;
 }
 

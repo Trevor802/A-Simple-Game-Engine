@@ -176,7 +176,6 @@
     <ClInclude Include="Monster.hpp" />
     <ClInclude Include="MonsterChase.h" />
     <ClInclude Include="MonsterController.hpp" />
-    <ClInclude Include="MonsterManager.hpp" />
     <ClInclude Include="PlayerController.hpp" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="targetver.h" />
@@ -186,7 +185,6 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Monster.cpp" />
     <ClCompile Include="MonsterController.cpp" />
-    <ClCompile Include="MonsterManager.cpp" />
     <ClCompile Include="PlayerController.cpp" />
   </ItemGroup>
   <ItemGroup>

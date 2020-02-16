@@ -182,6 +182,7 @@
     <ClInclude Include="BaseComponent.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="IActorController.hpp" />
+    <ClInclude Include="json.hpp" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="PhysicsComponent-inl.h" />
     <ClInclude Include="GameObject-tmpl.h" />

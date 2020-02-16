@@ -6,47 +6,43 @@
 //  Copyright © 2019 Trevor Alex. All rights reserved.
 //
 
+#pragma once
 #include "MonsterController.hpp"
-#include <iostream>
+#include "Vector2D.hpp"
+#include "SmartPtr.h"
+#include "PhysicsComponent.h"
 
-void MonsterController::SetActor(GameObject *i_Actor){
-    m_pMonster = dynamic_cast<Monster*>(i_Actor);
+void MonsterController::Update(float DeltaTime){
+    Vector2D dir = getMovingDirection();
+    auto physicsComponent = gameObject->GetComponent<PhysicsComponent>();
+    if (physicsComponent) {
+        physicsComponent->AddForce(dir * 1000.0f);
+    }
 }
 
-bool MonsterController::Update(float DeltaTime){
-    if (!m_pMonster->active) return false;
+Vector2D MonsterController::getMovingDirection()
+{
     Vector2D dir;
     switch (m_MovingStrategy) {
-        case MovingStrategy::ChasePlayer:
-            dir = chasingPlayerDirection();
-            break;
-        default:
-            dir = randomMovingDirection();
-            break;
+    case MovingStrategy::ChaseTarget:
+        dir = m_Target->GetPosition() - gameObject->GetPosition();
+        dir.Normalize();
+        break;
+    case MovingStrategy::Random:
+        dir = Vector2D::RandDir();
+        break;
+    case MovingStrategy::Patrol:
+        if (gameObject->GetPosition().x > 200.0f)
+            dir = -1;
+        else if (gameObject->GetPosition().x < 160.0f)
+            dir = 1;
+        break;
+    case MovingStrategy::Invalid:
+        throw invalid_argument("Invalid enum");
+        break;
+    default:
+        break;
     }
-    m_pMonster->SetPosition(m_Grid.move(m_pMonster->GetPosition(), dir));
-    m_pMonster->consumeTurn();
-    cout << m_pMonster->name << " moves to " << m_pMonster->GetPosition() << endl;
-    return true;
+    return dir;
 }
 
-MonsterController::~MonsterController(){
-    delete m_pMonster;
-}
-
-Vector2D MonsterController::chasingPlayerDirection() const {
-    Vector2D direction = m_pPlayer->GetPosition() - m_pMonster->GetPosition();
-    if (direction.x != 0 && direction.y != 0){
-        if (rand() % 2){
-            direction.y = 0;
-        }else{
-            direction.x = 0;
-        }
-    }
-    direction.clamp(Vector2D(-1, -1), Vector2D(2, 2));
-    return direction;
-}
-
-Vector2D MonsterController::randomMovingDirection() const {
-    return Vector2D::RandDir();
-}

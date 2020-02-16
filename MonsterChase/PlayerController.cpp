@@ -5,36 +5,14 @@
 //  Created by Trevor Alex on 12/23/19.
 //  Copyright © 2019 Trevor Alex. All rights reserved.
 //
-
+#pragma once
 #include "PlayerController.hpp"
-#include <iostream>
-#include <conio.h>
+#include "GameObject.hpp"
+#include "PhysicsComponent.h"
 
-bool PlayerController::Update(float DeltaTime) {
-    int input = _getch();
-    Vector2D move;
-    cout << "\n";
-    if (input == 'q'){
-        return false;
+void PlayerController::Update(float DeltaTime) {
+    auto physicsComponent = gameObject->GetComponent<PhysicsComponent>();
+    if (physicsComponent) {
+        physicsComponent->AddForce(m_Input * 5000.0f);
     }
-    else{
-        if (input == 'w'){
-            move = m_Grid.move(m_Player->GetPosition(), Vector2D(0, 1));
-        }
-        else if (input == 's'){
-            move = m_Grid.move(m_Player->GetPosition(), Vector2D(0, -1));
-        }
-        else if (input == 'a'){
-            move = m_Grid.move(m_Player->GetPosition(), Vector2D(-1, 0));
-        }
-        else if (input == 'd'){
-            move = m_Grid.move(m_Player->GetPosition(), Vector2D(1, 0));
-        }
-        cout << "Hero's position: " << m_Player->SetPosition(move) << endl;
-    }
-    return true;
-}
-
-PlayerController::~PlayerController(){
-    
 }
