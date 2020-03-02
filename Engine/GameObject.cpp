@@ -14,12 +14,19 @@ GameObject::GameObject(void){
 }
 
 GameObject::~GameObject() {
-    
+	
 }
 
 void GameObject::Update(float DeltaTime) {
 	for (auto it = m_Components.begin(); it != m_Components.end(); it++)
 	{
 		it->get()->Update(DeltaTime);
+	}
+}
+
+void GameObject::Release() {
+	for (auto it = m_Components.begin(); it != m_Components.end(); it++)
+	{
+		it->get()->Release();
 	}
 }

@@ -193,6 +193,7 @@
     <ClInclude Include="SmartPtr.h" />
     <ClInclude Include="Vector2D-inl.hpp" />
     <ClInclude Include="Vector2D.hpp" />
+    <ClInclude Include="World.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameObject.cpp" />
@@ -208,6 +209,7 @@
     <ClCompile Include="RendererComponent.cpp" />
     <ClCompile Include="SmartPtr.cpp" />
     <ClCompile Include="Vector2D.cpp" />
+    <ClCompile Include="World.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

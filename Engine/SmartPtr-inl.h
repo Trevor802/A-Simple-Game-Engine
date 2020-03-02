@@ -55,6 +55,7 @@ inline T& WeakPtr<T>::operator*() {
 
 template<typename T>
 inline void WeakPtr<T>::Release() {
+	if (!m_pRefCounter) return;
 	assert(m_pRefCounter->WeakRefCount > 0);
 	m_pRefCounter->WeakRefCount--;
 }

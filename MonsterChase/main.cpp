@@ -14,8 +14,12 @@
 #include "PhysicsComponent.h"
 #include "PlayerController.hpp"
 #include "MonsterController.hpp"
+#include <vector>
 #include <fstream>
 #include "json.hpp"
+#include "World.h"
+#include <mutex>
+#include <thread>
 
 #if defined _DEBUG
 #define _CRTDBG_MAP_ALLOC
@@ -33,6 +37,62 @@ GLib::Sprites::Sprite* CreateSprite(const char* i_pFilename, float i_Scale);
 static bool bQuit;
 static Vector2D m_input = Vector2D();
 const float m_speed = 100.0f;
+
+mutex NewGameObjectMutex;
+vector<StrongPtr<GameObject>> AllGameObjects;
+vector<StrongPtr<GameObject>> NewGameObjects;
+vector< GLib::Sprites::Sprite*> Sprites;
+
+void AddNewGameObject(StrongPtr<GameObject> i_GameObject) {
+	if (i_GameObject) {
+		NewGameObjectMutex.lock();
+		NewGameObjects.push_back(i_GameObject);
+	}
+	NewGameObjectMutex.unlock();
+}
+
+void CheckNewGameObjects() {
+	NewGameObjectMutex.lock();
+	for (auto it = NewGameObjects.begin(); it != NewGameObjects.end(); ++it)
+	{
+		AllGameObjects.push_back(*it);
+	}
+	NewGameObjects.clear();
+	NewGameObjectMutex.unlock();
+}
+
+void CreateGameObjectsFromFile(const char* i_FileName) {
+	ifstream jFile(i_FileName);
+	json j;
+	jFile >> j;
+	jFile.close();
+	for (auto o : j)
+	{
+		Vector2D position = Vector2D(o["position"][0], o["position"][1]);
+		string name = o["name"];
+		string spritePath = o["sprite"];
+		float size = o["size"];
+		string controllerName = o["controller"];
+		
+		StrongPtr<GameObject> gameObject = StrongPtr<GameObject>(new GameObject(position, name));
+		AddNewGameObject(gameObject);
+		GLib::Sprites::Sprite* sprite = CreateSprite(spritePath.c_str(), size);
+
+		if (sprite) {
+			Sprites.push_back(sprite);
+			RendererComponent* pRendererComp = new RendererComponent();
+			pRendererComp->SetSprite(sprite);
+			PhysicsComponent* pPhysicsComp = new PhysicsComponent();
+			pPhysicsComp->bUseGravity = false;
+			MonsterController* pController = new MonsterController(j[0]["controller"].get<MovingStrategy>());
+			gameObject->AddComponent<MonsterController>(pController);
+			gameObject->AddComponent<PhysicsComponent>(pPhysicsComp);
+			gameObject->AddComponent<RendererComponent>(pRendererComp);
+		}
+	}
+	CheckNewGameObjects();
+}
+
 void TestKeyCallback(unsigned int i_VKeyID, bool bWentDown)
 {
 #ifdef _DEBUG
@@ -68,17 +128,11 @@ int WINAPI wWinMain(HINSTANCE i_hInstance, HINSTANCE i_hPrevInstance, LPWSTR i_l
 		// IMPORTANT (if we want keypress info from GLib): Set a callback for notification of key presses
 		GLib::SetKeyStateChangeCallback(TestKeyCallback);
 
-		ifstream jFile ("objects.json");
-		json j;
-		jFile >> j;
-		jFile.close();
 		StrongPtr<GameObject> pHero = StrongPtr<GameObject>(new GameObject(Vector2D(), "trevor"));
-		StrongPtr<GameObject> pSlime = StrongPtr<GameObject>(new GameObject(Vector2D(j[0]["position"][0], j[0]["position"][1]), j[0]["name"]));
-
+		AddNewGameObject(pHero);
+		CheckNewGameObjects();
 		// Create a couple of sprites using our own helper routine CreateSprite
 		GLib::Sprites::Sprite* pGoodGuy = CreateSprite("Sprites\\hero.dds", 0.5f);
-		GLib::Sprites::Sprite* pBadGuy = CreateSprite(j[0]["sprite"].get<string>().c_str(), j[0]["size"]);
-
 #pragma region Initialize
 		if (pGoodGuy) {
 			RendererComponent* pRendererComp = new RendererComponent();
@@ -89,17 +143,26 @@ int WINAPI wWinMain(HINSTANCE i_hInstance, HINSTANCE i_hPrevInstance, LPWSTR i_l
 			pHero->AddComponent<PhysicsComponent>(pPhysicsComp);
 			pHero->AddComponent<RendererComponent>(pRendererComp);
 		}
+		CreateGameObjectsFromFile("objects.json");
+		/*ifstream jFile("objects.json");
+		json j;
+		jFile >> j;
+		jFile.close();
+		StrongPtr<GameObject> pSlime = StrongPtr<GameObject>(new GameObject(Vector2D(j[0]["position"][0],
+			j[0]["position"][1]), j[0]["name"]));
+		AddNewGameObject(pSlime);
+		GLib::Sprites::Sprite* pBadGuy = CreateSprite(j[0]["sprite"].get<string>().c_str(), j[0]["size"]);
+
 		if (pBadGuy) {
 			RendererComponent* pRendererComp = new RendererComponent();
 			pRendererComp->SetSprite(pBadGuy);
 			PhysicsComponent* pPhysicsComp = new PhysicsComponent();
 			pPhysicsComp->bUseGravity = false;
 			MonsterController* pController = new MonsterController(j[0]["controller"].get<MovingStrategy>());
-			pController->SetTarget(pHero);
 			pSlime->AddComponent<MonsterController>(pController);
 			pSlime->AddComponent<PhysicsComponent>(pPhysicsComp);
 			pSlime->AddComponent<RendererComponent>(pRendererComp);
-		}
+		}*/
 #pragma endregion
 
 		do
@@ -121,9 +184,8 @@ int WINAPI wWinMain(HINSTANCE i_hInstance, HINSTANCE i_hPrevInstance, LPWSTR i_l
 					pHero->GetComponent<PlayerController>()->SetInput(m_input);
 					pHero->Update(deltaTime);
 				}
-				if (pBadGuy)
-				{
-					pSlime->Update(deltaTime);
+				for (auto o : AllGameObjects) {
+					o->Update(deltaTime);
 				}
 
 				// Tell GLib we're done rendering sprites
@@ -135,9 +197,10 @@ int WINAPI wWinMain(HINSTANCE i_hInstance, HINSTANCE i_hPrevInstance, LPWSTR i_l
 
 		if (pGoodGuy)
 			GLib::Sprites::Release(pGoodGuy);
-		if (pBadGuy)
-			GLib::Sprites::Release(pBadGuy);
-
+		for (auto sprite : Sprites )
+		{
+			GLib::Sprites::Release(sprite);
+		}
 		// IMPORTANT:  Tell GLib to shutdown, releasing resources.
 		GLib::Shutdown();
 	}

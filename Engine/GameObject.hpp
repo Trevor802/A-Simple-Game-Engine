@@ -18,6 +18,7 @@ public:
     GameObject(void);
     GameObject(Vector2D position, const string name) : m_Position(position), name(name), active(true){};
     virtual ~GameObject();
+    virtual void Release();
     virtual void Update(float DeltaTime);
     string name;
     bool active;
