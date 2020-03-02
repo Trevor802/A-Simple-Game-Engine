@@ -182,6 +182,9 @@
     <ClInclude Include="BaseComponent.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="IActorController.hpp" />
+    <ClInclude Include="IJob.h" />
+    <ClInclude Include="JobQueue.h" />
+    <ClInclude Include="JobSystem.h" />
     <ClInclude Include="json.hpp" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="PhysicsComponent-inl.h" />
@@ -199,6 +202,8 @@
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="BaseComponent.cpp" />
     <ClCompile Include="Engine.cpp" />
+    <ClCompile Include="JobQueue.cpp" />
+    <ClCompile Include="JobSystem.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

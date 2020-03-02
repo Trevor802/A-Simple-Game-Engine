@@ -20,6 +20,7 @@
 #include "World.h"
 #include <mutex>
 #include <thread>
+#include "JobSystem.h"
 
 #if defined _DEBUG
 #define _CRTDBG_MAP_ALLOC
@@ -61,37 +62,44 @@ void CheckNewGameObjects() {
 	NewGameObjectMutex.unlock();
 }
 
-void CreateGameObjectsFromFile(const char* i_FileName) {
-	ifstream jFile(i_FileName);
-	json j;
-	jFile >> j;
-	jFile.close();
-	for (auto o : j)
-	{
-		Vector2D position = Vector2D(o["position"][0], o["position"][1]);
-		string name = o["name"];
-		string spritePath = o["sprite"];
-		float size = o["size"];
-		string controllerName = o["controller"];
-		
-		StrongPtr<GameObject> gameObject = StrongPtr<GameObject>(new GameObject(position, name));
-		AddNewGameObject(gameObject);
-		GLib::Sprites::Sprite* sprite = CreateSprite(spritePath.c_str(), size);
+class CreateGameObjectsFromFile {
+public:
+	CreateGameObjectsFromFile(string i_FileName) : m_FileName(i_FileName) { assert(!i_FileName.empty()); };
+	void operator() () {
+		ifstream jFile(m_FileName);
+		json j;
+		jFile >> j;
+		jFile.close();
+		for (auto o : j)
+		{
+			Vector2D position = Vector2D(o["position"][0], o["position"][1]);
+			string name = o["name"];
+			string spritePath = o["sprite"];
+			float size = o["size"];
+			string controllerName = o["controller"];
 
-		if (sprite) {
-			Sprites.push_back(sprite);
-			RendererComponent* pRendererComp = new RendererComponent();
-			pRendererComp->SetSprite(sprite);
-			PhysicsComponent* pPhysicsComp = new PhysicsComponent();
-			pPhysicsComp->bUseGravity = false;
-			MonsterController* pController = new MonsterController(j[0]["controller"].get<MovingStrategy>());
-			gameObject->AddComponent<MonsterController>(pController);
-			gameObject->AddComponent<PhysicsComponent>(pPhysicsComp);
-			gameObject->AddComponent<RendererComponent>(pRendererComp);
+			StrongPtr<GameObject> gameObject = StrongPtr<GameObject>(new GameObject(position, name));
+			AddNewGameObject(gameObject);
+			GLib::Sprites::Sprite* sprite = CreateSprite(spritePath.c_str(), size);
+
+			if (sprite) {
+				Sprites.push_back(sprite);
+				RendererComponent* pRendererComp = new RendererComponent();
+				pRendererComp->SetSprite(sprite);
+				PhysicsComponent* pPhysicsComp = new PhysicsComponent();
+				pPhysicsComp->bUseGravity = false;
+				MonsterController* pController = new MonsterController(j[0]["controller"].get<MovingStrategy>());
+				gameObject->AddComponent<MonsterController>(pController);
+				gameObject->AddComponent<PhysicsComponent>(pPhysicsComp);
+				gameObject->AddComponent<RendererComponent>(pRendererComp);
+			}
 		}
+		CheckNewGameObjects();
 	}
-	CheckNewGameObjects();
-}
+
+private:
+	string m_FileName;
+};
 
 void TestKeyCallback(unsigned int i_VKeyID, bool bWentDown)
 {
@@ -143,7 +151,12 @@ int WINAPI wWinMain(HINSTANCE i_hInstance, HINSTANCE i_hPrevInstance, LPWSTR i_l
 			pHero->AddComponent<PhysicsComponent>(pPhysicsComp);
 			pHero->AddComponent<RendererComponent>(pRendererComp);
 		}
-		CreateGameObjectsFromFile("objects.json");
+		Engine::JobSystem::CreateQueue();
+		void* p = nullptr;
+		using namespace std::placeholders;
+		Engine::JobSystem::Add(0, std::bind(CreateGameObjectsFromFile("objects.json")));
+		Engine::JobSystem::RunJob(0);
+		//CreateGameObjectsFromFile("objects.json", 0);
 		/*ifstream jFile("objects.json");
 		json j;
 		jFile >> j;
