@@ -186,16 +186,20 @@
     <ClInclude Include="JobQueue.h" />
     <ClInclude Include="JobSystem.h" />
     <ClInclude Include="json.hpp" />
+    <ClInclude Include="Mutex.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="PhysicsComponent-inl.h" />
     <ClInclude Include="GameObject-tmpl.h" />
     <ClInclude Include="PhysicsComponent.h" />
     <ClInclude Include="RendererComponent.h" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="ScopeLock.h" />
     <ClInclude Include="SmartPtr-inl.h" />
     <ClInclude Include="SmartPtr-tmpl.h" />
     <ClInclude Include="SmartPtr.h" />
     <ClInclude Include="Vector2D-inl.hpp" />
     <ClInclude Include="Vector2D.hpp" />
+    <ClInclude Include="WaitableObject.h" />
     <ClInclude Include="World.h" />
   </ItemGroup>
   <ItemGroup>
@@ -204,6 +208,7 @@
     <ClCompile Include="Engine.cpp" />
     <ClCompile Include="JobQueue.cpp" />
     <ClCompile Include="JobSystem.cpp" />
+    <ClCompile Include="Mutex.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

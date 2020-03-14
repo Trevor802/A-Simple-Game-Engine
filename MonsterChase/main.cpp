@@ -18,9 +18,9 @@
 #include <fstream>
 #include "json.hpp"
 #include "World.h"
-#include <mutex>
 #include <thread>
 #include "JobSystem.h"
+#include "ScopeLock.h"
 
 #if defined _DEBUG
 #define _CRTDBG_MAP_ALLOC
@@ -39,27 +39,25 @@ static bool bQuit;
 static Vector2D m_input = Vector2D();
 const float m_speed = 100.0f;
 
-mutex NewGameObjectMutex;
+Engine::JobSystem::Mutex NewGameObjectMutex;
 vector<StrongPtr<GameObject>> AllGameObjects;
 vector<StrongPtr<GameObject>> NewGameObjects;
 vector< GLib::Sprites::Sprite*> Sprites;
 
 void AddNewGameObject(StrongPtr<GameObject> i_GameObject) {
 	if (i_GameObject) {
-		NewGameObjectMutex.lock();
+		Engine::JobSystem::ScopeLock Lock(NewGameObjectMutex);
 		NewGameObjects.push_back(i_GameObject);
 	}
-	NewGameObjectMutex.unlock();
 }
 
 void CheckNewGameObjects() {
-	NewGameObjectMutex.lock();
+	Engine::JobSystem::ScopeLock Lock(NewGameObjectMutex);
 	for (auto it = NewGameObjects.begin(); it != NewGameObjects.end(); ++it)
 	{
 		AllGameObjects.push_back(*it);
 	}
 	NewGameObjects.clear();
-	NewGameObjectMutex.unlock();
 }
 
 class CreateGameObjectsFromFile {
@@ -156,26 +154,6 @@ int WINAPI wWinMain(HINSTANCE i_hInstance, HINSTANCE i_hPrevInstance, LPWSTR i_l
 		using namespace std::placeholders;
 		Engine::JobSystem::Add(0, std::bind(CreateGameObjectsFromFile("objects.json")));
 		Engine::JobSystem::RunJob(0);
-		//CreateGameObjectsFromFile("objects.json", 0);
-		/*ifstream jFile("objects.json");
-		json j;
-		jFile >> j;
-		jFile.close();
-		StrongPtr<GameObject> pSlime = StrongPtr<GameObject>(new GameObject(Vector2D(j[0]["position"][0],
-			j[0]["position"][1]), j[0]["name"]));
-		AddNewGameObject(pSlime);
-		GLib::Sprites::Sprite* pBadGuy = CreateSprite(j[0]["sprite"].get<string>().c_str(), j[0]["size"]);
-
-		if (pBadGuy) {
-			RendererComponent* pRendererComp = new RendererComponent();
-			pRendererComp->SetSprite(pBadGuy);
-			PhysicsComponent* pPhysicsComp = new PhysicsComponent();
-			pPhysicsComp->bUseGravity = false;
-			MonsterController* pController = new MonsterController(j[0]["controller"].get<MovingStrategy>());
-			pSlime->AddComponent<MonsterController>(pController);
-			pSlime->AddComponent<PhysicsComponent>(pPhysicsComp);
-			pSlime->AddComponent<RendererComponent>(pRendererComp);
-		}*/
 #pragma endregion
 
 		do
