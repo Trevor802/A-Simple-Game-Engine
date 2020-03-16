@@ -21,6 +21,7 @@
 #include <thread>
 #include "JobSystem.h"
 #include "ScopeLock.h"
+#include "Mutex.h"
 
 #if defined _DEBUG
 #define _CRTDBG_MAP_ALLOC
@@ -92,7 +93,6 @@ public:
 				gameObject->AddComponent<RendererComponent>(pRendererComp);
 			}
 		}
-		CheckNewGameObjects();
 	}
 
 private:
@@ -150,10 +150,15 @@ int WINAPI wWinMain(HINSTANCE i_hInstance, HINSTANCE i_hPrevInstance, LPWSTR i_l
 			pHero->AddComponent<RendererComponent>(pRendererComp);
 		}
 		Engine::JobSystem::CreateQueue();
-		void* p = nullptr;
 		using namespace std::placeholders;
-		Engine::JobSystem::Add(0, std::bind(CreateGameObjectsFromFile("objects.json")));
-		Engine::JobSystem::RunJob(0);
+		{
+			Engine::JobSystem::RunJob(0, std::bind(CreateGameObjectsFromFile("objects.json")));
+			do {
+				CheckNewGameObjects();
+				Sleep(10);
+			} while (Engine::JobSystem::HasJob(0));
+		}
+		CheckNewGameObjects();
 #pragma endregion
 
 		do

@@ -184,6 +184,7 @@
     <ClInclude Include="IActorController.hpp" />
     <ClInclude Include="IJob.h" />
     <ClInclude Include="JobQueue.h" />
+    <ClInclude Include="JobRunner.h" />
     <ClInclude Include="JobSystem.h" />
     <ClInclude Include="json.hpp" />
     <ClInclude Include="Mutex.h" />
@@ -207,6 +208,7 @@
     <ClCompile Include="BaseComponent.cpp" />
     <ClCompile Include="Engine.cpp" />
     <ClCompile Include="JobQueue.cpp" />
+    <ClCompile Include="JobRunner.cpp" />
     <ClCompile Include="JobSystem.cpp" />
     <ClCompile Include="Mutex.cpp" />
     <ClCompile Include="pch.cpp">
