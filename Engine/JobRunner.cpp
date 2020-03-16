@@ -7,9 +7,9 @@ namespace Engine {
 		DWORD WINAPI JobRunner(LPVOID lpParam)
 		{
 			assert(lpParam);
-			assert((JobRunnerData*)lpParam);
-			JobRunnerData* pData = reinterpret_cast<JobRunnerData*> (lpParam);
-			JobQueue* pQueue = reinterpret_cast<JobQueue*> (pData->pQueue);
+			assert((JobQueue*)lpParam);
+			JobQueue* pQueue = reinterpret_cast<JobQueue*> (lpParam);
+			assert(pQueue);
 			bool done = false;
 			do {
 				JobData* pJobData = pQueue->GetFrontJob();

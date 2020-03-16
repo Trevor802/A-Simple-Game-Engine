@@ -9,6 +9,7 @@ namespace Engine {
 	namespace JobSystem {
 		struct JobData
 		{
+			JobData(IJob* i_pJob) : pJob(i_pJob) {}
 			IJob* pJob	= nullptr;
 			void* pArgs = nullptr;
 			DWORD Index = 0;

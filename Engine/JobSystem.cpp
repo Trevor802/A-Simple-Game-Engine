@@ -21,7 +21,7 @@ namespace Engine {
 		void AddRunner(JobQueueData& i_QueueData) {
 			JobRunnerData* pRunnerData = new JobRunnerData;
 			pRunnerData->pQueue = &i_QueueData.m_Queue;
-			pRunnerData->m_ThreadHandle = CreateThread(NULL, 0, JobRunner, &pRunnerData->pQueue, 
+			pRunnerData->m_ThreadHandle = CreateThread(NULL, 0, JobRunner, pRunnerData->pQueue, 
 				CREATE_SUSPENDED, &pRunnerData->m_ThreadID);
 			assert(pRunnerData->m_ThreadHandle != NULL);
 			i_QueueData.m_Runners.push_back(pRunnerData);
@@ -31,9 +31,7 @@ namespace Engine {
 		void RunJob(DWORD i_QueueIndex, std::function<void()> i_Func) {
 			assert(Queues.size() > i_QueueIndex);
 			JobFunc* pJob = new JobFunc(i_Func);
-			JobData* pJobData = new JobData();
-			pJobData->pJob = pJob;
-			Queues[i_QueueIndex]->m_Queue.Add(pJobData);
+			Queues[i_QueueIndex]->m_Queue.Add(new JobData(pJob));
 		}
 
 		bool HasJob(DWORD i_QueueIndex)
