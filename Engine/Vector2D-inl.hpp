@@ -19,7 +19,7 @@ inline char* Vector2D::ToString() const
 
 inline bool Vector2D::IsZero(float i_val) const
 {
-    return AreEqual(i_val, 0, FLT_EPSILON);
+    return Engine::Numeric::AreEqual(i_val, 0, FLT_EPSILON);
 }
 
 inline bool Vector2D::operator==(const Vector2D& a) const {
@@ -39,10 +39,6 @@ inline float Vector2D::SqrMagnitude() const
 inline Vector2D Vector2D::Normalize() const
 {
     return Vector2D( IsZero(x) ? 0 : x / Magnitude(), IsZero(y) ? 0 : y / Magnitude());
-}
-
-inline bool Vector2D::AreEqual(float i_lhs, float i_rhs, float i_maxDiff) const {
-    return fabs(i_lhs - i_rhs) < i_maxDiff;
 }
 
 inline Vector2D Vector2D::Clamp(float MaxMagnitude) const

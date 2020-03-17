@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -187,7 +187,9 @@
     <ClInclude Include="JobRunner.h" />
     <ClInclude Include="JobSystem.h" />
     <ClInclude Include="json.hpp" />
+    <ClInclude Include="Matrix4x4.h" />
     <ClInclude Include="Mutex.h" />
+    <ClInclude Include="Numeric.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="PhysicsComponent-inl.h" />
     <ClInclude Include="GameObject-tmpl.h" />
@@ -200,6 +202,8 @@
     <ClInclude Include="SmartPtr.h" />
     <ClInclude Include="Vector2D-inl.hpp" />
     <ClInclude Include="Vector2D.hpp" />
+    <ClInclude Include="Vector3.h" />
+    <ClInclude Include="Vector4.h" />
     <ClInclude Include="WaitableObject.h" />
     <ClInclude Include="World.h" />
   </ItemGroup>
@@ -210,6 +214,7 @@
     <ClCompile Include="JobQueue.cpp" />
     <ClCompile Include="JobRunner.cpp" />
     <ClCompile Include="JobSystem.cpp" />
+    <ClCompile Include="Matrix4x4.cpp" />
     <ClCompile Include="Mutex.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -221,6 +226,8 @@
     <ClCompile Include="RendererComponent.cpp" />
     <ClCompile Include="SmartPtr.cpp" />
     <ClCompile Include="Vector2D.cpp" />
+    <ClCompile Include="Vector3.cpp" />
+    <ClCompile Include="Vector4.cpp" />
     <ClCompile Include="World.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

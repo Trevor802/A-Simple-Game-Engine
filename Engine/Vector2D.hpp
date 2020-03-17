@@ -9,6 +9,7 @@
 #include <iostream>
 #include <math.h>
 #include <assert.h>
+#include "Numeric.h"
 #include "BasicTypes.h"
 
 class Vector2D {
@@ -51,8 +52,6 @@ public:
     inline char* ToString() const;
 
     inline bool IsZero(float i_val) const;
-
-    inline bool AreEqual(float i_lhs, float i_rhs, float i_maxDiff) const;
 
     inline Vector2D Clamp(float MaxMagnitude) const;
 
