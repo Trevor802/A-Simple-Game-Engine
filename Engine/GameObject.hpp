@@ -7,10 +7,14 @@
 //
 #pragma once
 
+#define _USE_MATH_DEFINES
+
 #include <string>
 #include "Vector2D.hpp"
 #include <vector>
 #include "BaseComponent.h"
+#include <math.h>
+
 using namespace std;
 
 class GameObject{
@@ -25,6 +29,7 @@ public:
     
 private:
     Vector2D m_Position;
+    float m_RotRadians;
     vector<unique_ptr<BaseComponent>> m_Components;
     
 public:
@@ -33,6 +38,9 @@ public:
         m_Position = i_Position;
         return m_Position;
     };
+    inline void SetRotation(float i_degree) { m_RotRadians = i_degree * (float)M_PI / 180.f; }
+    inline float GetRotRad() const { return m_RotRadians; }
+    inline float GetRotDeg() const { return m_RotRadians * 180.f / (float)M_PI; }
     Vector2D Move(const Vector2D& i_Move) {
         m_Position += i_Move;
         return m_Position;

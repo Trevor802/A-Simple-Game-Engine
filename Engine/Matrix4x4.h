@@ -65,6 +65,7 @@ namespace Engine {
 
 		friend Matrix4x4 operator*(const Matrix4x4& i_matrix, const float i_scalar);
 		friend Matrix4x4 operator*(const float i_scalar, const Matrix4x4& i_matrix);
+		friend Vector4 operator* (const Matrix4x4& i_matrix, const Vector4& i_point);
 
 		static const Matrix4x4 Identity;
 		static Matrix4x4 scale(float i_x, float i_y, float i_z, float i_w = 1.0f);
@@ -121,6 +122,15 @@ namespace Engine {
 		return operator*(i_matrix, i_scalar);
 	}
 
+	inline Vector4 operator*(const Matrix4x4& m, const Vector4& v) {
+		return Vector4(
+			m.m[0][0] * v.GetX() + m.m[0][1] * v.GetY() + m.m[0][2] * v.GetZ() + m.m[0][3] * v.GetW(),
+			m.m[1][0] * v.GetX() + m.m[1][1] * v.GetY() + m.m[1][2] * v.GetZ() + m.m[1][3] * v.GetW(),
+			m.m[2][0] * v.GetX() + m.m[2][1] * v.GetY() + m.m[2][2] * v.GetZ() + m.m[2][3] * v.GetW(),
+			m.m[3][0] * v.GetX() + m.m[3][1] * v.GetY() + m.m[3][2] * v.GetZ() + m.m[3][3] * v.GetW()
+		);
+	}
+
 	inline std::ostream& operator<<(std::ostream& os, const Matrix4x4& i_other) {
 		for (int i = 0; i < 4; i++) {
 			for (int j = 0; j < 4; j++) {
@@ -130,6 +140,7 @@ namespace Engine {
 		}
 		return os;
 	}
+
 }
 
 
