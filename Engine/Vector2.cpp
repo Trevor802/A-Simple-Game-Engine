@@ -7,10 +7,10 @@
 //
 #define _USE_MATH_DEFINES
 
-#include "Vector2D.hpp"
+#include "Vector2.hpp"
 #include <math.h>
 
-bool Vector2D::InArray(const Vector2D array[], const int size, const Vector2D v){
+bool Vector2::InArray(const Vector2 array[], const int size, const Vector2 v){
     for(int i = 0; i < size; i++){
         if (array[i] == v){
             return true;
@@ -19,20 +19,20 @@ bool Vector2D::InArray(const Vector2D array[], const int size, const Vector2D v)
     return false;
 }
 
-Vector2D Vector2D::RandInArea(const float width, const float height){
-    return Vector2D((float)rand() / (float)RAND_MAX * width, (float)rand() / (float)RAND_MAX * height);
+Vector2 Vector2::RandInArea(const float width, const float height){
+    return Vector2((float)rand() / (float)RAND_MAX * width, (float)rand() / (float)RAND_MAX * height);
 }
 
-Vector2D Vector2D::RandDir(){
-    Vector2D v;
+Vector2 Vector2::RandDir(){
+    Vector2 v;
     double r = (double)rand() / RAND_MAX;
-    v.x = cos(2 * M_PI * r);
-    v.y = sin(2 * M_PI * r);
+    v.x = (float)cos(2 * M_PI * r);
+    v.y = (float)sin(2 * M_PI * r);
     return v;
 }
 
-Vector2D Vector2D::Clamp(const Vector2D& a, const Vector2D& min_v, const Vector2D& max_v) {
-    Vector2D v = a;
+Vector2 Vector2::Clamp(const Vector2& a, const Vector2& min_v, const Vector2& max_v) {
+    Vector2 v = a;
     if (a.x < min_v.x)
         v.x = min_v.x;
     else if (a.x >= max_v.x)
@@ -44,12 +44,12 @@ Vector2D Vector2D::Clamp(const Vector2D& a, const Vector2D& min_v, const Vector2
     return v;
 }
 
-float Vector2D::Dot(const Vector2D& i_lhs, const Vector2D& i_rhs)
+float Vector2::Dot(const Vector2& i_lhs, const Vector2& i_rhs)
 {
     return i_lhs.x * i_rhs.x + i_lhs.y * i_rhs.y;
 }
 
-bool Vector2D::clamp(const Vector2D& min_v, const Vector2D& max_v){
+bool Vector2::clamp(const Vector2& min_v, const Vector2& max_v){
     if (x >= min_v.x && x < max_v.x && y >= min_v.y && y < max_v.y)
         return false;
     if (x < min_v.x)
@@ -63,7 +63,7 @@ bool Vector2D::clamp(const Vector2D& min_v, const Vector2D& max_v){
     return true;
 }
 
-std::ostream& operator<<(std::ostream& o, const Vector2D v) {
+std::ostream& operator<<(std::ostream& o, const Vector2 v) {
     o << "x: " << v.x << " y: " << v.y;
     return o;
 }

@@ -14,7 +14,7 @@
 class Monster : public GameObject {
 public:
     Monster(void){};
-    Monster(const Vector2D& position, const string name, const int deathTurn);
+    Monster(const Vector2& position, const string name, const int deathTurn);
     void consumeTurn();
     void setTurn(const int turn);
     int getTurn() const;

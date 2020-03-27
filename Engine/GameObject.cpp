@@ -14,7 +14,8 @@ GameObject::GameObject(void){
 }
 
 GameObject::~GameObject() {
-	
+	Release();
+
 }
 
 void GameObject::Update(float DeltaTime) {

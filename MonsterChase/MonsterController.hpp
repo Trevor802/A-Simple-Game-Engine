@@ -10,7 +10,7 @@
 #include "BaseComponent.h"
 #include "GameObject.hpp"
 #include "SmartPtr.h"
-#include "Vector2D.hpp"
+#include "Vector2.hpp"
 #include "json.hpp"
 
 enum MovingStrategy{
@@ -36,7 +36,7 @@ public:
     inline void SetTarget(StrongPtr<GameObject> i_Target) { m_Target = i_Target; }
 
 private:
-    Vector2D getMovingDirection();
+    Vector2 getMovingDirection();
     MovingStrategy m_MovingStrategy = MovingStrategy::Random;
     WeakPtr<GameObject> m_Target;
 };

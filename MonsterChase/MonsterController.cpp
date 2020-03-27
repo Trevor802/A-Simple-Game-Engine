@@ -8,28 +8,28 @@
 
 #pragma once
 #include "MonsterController.hpp"
-#include "Vector2D.hpp"
+#include "Vector2.hpp"
 #include "SmartPtr.h"
 #include "PhysicsComponent.h"
 
 void MonsterController::Update(float DeltaTime){
-    Vector2D dir = getMovingDirection();
+    Vector2 dir = getMovingDirection();
     auto physicsComponent = gameObject->GetComponent<PhysicsComponent>();
     if (physicsComponent) {
         physicsComponent->AddForce(dir * 1000.0f);
     }
 }
 
-Vector2D MonsterController::getMovingDirection()
+Vector2 MonsterController::getMovingDirection()
 {
-    Vector2D dir;
+    Vector2 dir;
     switch (m_MovingStrategy) {
     case MovingStrategy::ChaseTarget:
         dir = m_Target->GetPosition() - gameObject->GetPosition();
         dir.Normalize();
         break;
     case MovingStrategy::Random:
-        dir = Vector2D::RandDir();
+        dir = Vector2::RandDir();
         break;
     case MovingStrategy::Patrol:
         if (gameObject->GetPosition().x > 200.0f)

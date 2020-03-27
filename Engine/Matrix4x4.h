@@ -1,6 +1,8 @@
 #pragma once
 #include <iostream>
 #include "Vector4.h"
+#include "Vector3.h"
+#include "Vector2.hpp"
 namespace Engine {
 	class Matrix4x4
 	{
@@ -68,12 +70,14 @@ namespace Engine {
 		friend Vector4 operator* (const Matrix4x4& i_matrix, const Vector4& i_point);
 
 		static const Matrix4x4 Identity;
-		static Matrix4x4 scale(float i_x, float i_y, float i_z, float i_w = 1.0f);
-		static Matrix4x4 rotateX(float i_theta);
-		static Matrix4x4 rotateY(float i_theta);
-		static Matrix4x4 rotateZ(float i_theta);
-		static Matrix4x4 rotate(const Vector4& i_axis, float i_theta);
-		static Matrix4x4 translate(float i_x, float i_y, float i_z);
+		static Matrix4x4 CreateScale(float i_x, float i_y, float i_z, float i_w = 1.0f);
+		static Matrix4x4 CreateXRotation(float i_theta);
+		static Matrix4x4 CreateYRotation(float i_theta);
+		static Matrix4x4 CreateZRotation(float i_theta);
+		static Matrix4x4 CreateRotation(const Vector4& i_axis, float i_theta);
+		static Matrix4x4 CreateTranslation(float i_x, float i_y, float i_z);
+		static Matrix4x4 CreateTranslation(Vector3 i_v);
+		static Matrix4x4 CreateTranslation(Vector2 i_v);
 		inline Matrix4x4 getTranspose() const {
 			Matrix4x4 r;
 			for (int i = 0; i < 4; i++) {

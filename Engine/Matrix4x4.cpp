@@ -23,7 +23,7 @@ namespace Engine {
 			GetRow(3).DotProduct(i_rhs)
 		);
 	}
-	Matrix4x4 Matrix4x4::scale(float i_x, float i_y, float i_z, float i_w)
+	Matrix4x4 Matrix4x4::CreateScale(float i_x, float i_y, float i_z, float i_w)
 	{
 		return Matrix4x4(
 			i_x, 0, 0, 0,
@@ -32,7 +32,7 @@ namespace Engine {
 			0, 0, 0, i_w
 		);
 	}
-	Matrix4x4 Matrix4x4::rotateX(float i_theta)
+	Matrix4x4 Matrix4x4::CreateXRotation(float i_theta)
 	{
 		float s = sin(i_theta);
 		float c = cos(i_theta);
@@ -43,7 +43,7 @@ namespace Engine {
 			0,	0,	0,	1
 		);
 	}
-	Matrix4x4 Matrix4x4::rotateY(float i_theta)
+	Matrix4x4 Matrix4x4::CreateYRotation(float i_theta)
 	{
 		float s = sin(i_theta);
 		float c = cos(i_theta);
@@ -54,7 +54,7 @@ namespace Engine {
 			0,	0,	0,	1
 		);
 	}
-	Matrix4x4 Matrix4x4::rotateZ(float i_theta)
+	Matrix4x4 Matrix4x4::CreateZRotation(float i_theta)
 	{
 		float s = sin(i_theta);
 		float c = cos(i_theta);
@@ -65,7 +65,7 @@ namespace Engine {
 			0,	0,	0,	1
 		);
 	}
-	Matrix4x4 Matrix4x4::rotate(const Vector4& i_axis, float i_theta)
+	Matrix4x4 Matrix4x4::CreateRotation(const Vector4& i_axis, float i_theta)
 	{
 		float ax = i_axis.GetX();
 		float ay = i_axis.GetY();
@@ -85,12 +85,30 @@ namespace Engine {
 			0,					0,					0,					1
 		);
 	}
-	Matrix4x4 Matrix4x4::translate(float i_x, float i_y, float i_z)
+	Matrix4x4 Matrix4x4::CreateTranslation(float i_x, float i_y, float i_z)
 	{
 		return Matrix4x4(
 			1, 0, 0, i_x,
 			0, 1, 0, i_y,
 			0, 0, 1, i_z,
+			0, 0, 0, 1
+		);
+	}
+	Matrix4x4 Matrix4x4::CreateTranslation(Vector3 i_v)
+	{
+		return Matrix4x4(
+			1, 0, 0, i_v.GetX(),
+			0, 1, 0, i_v.GetY(),
+			0, 0, 1, i_v.GetZ(),
+			0, 0, 0, 1
+		);
+	}
+	Matrix4x4 Matrix4x4::CreateTranslation(Vector2 i_v)
+	{
+		return Matrix4x4(
+			1, 0, 0, i_v.x,
+			0, 1, 0, i_v.y,
+			0, 0, 1, 0,
 			0, 0, 0, 1
 		);
 	}

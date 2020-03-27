@@ -12,8 +12,10 @@
 #include "BaseComponent.h"
 #include "RendererComponent.h"
 #include "PhysicsComponent.h"
+#include "BoxCollider.h"
 #include "PlayerController.hpp"
 #include "MonsterController.hpp"
+#include "_Sprite/SpriteRender.cpp"
 #include <vector>
 #include <fstream>
 #include "json.hpp"
@@ -35,31 +37,15 @@ using json = nlohmann::json;
 
 void* LoadFile(const char* i_pFilename, size_t& o_sizeFile);
 GLib::Sprites::Sprite* CreateSprite(const char* i_pFilename, float i_Scale);
+struct GLib::Sprites::Sprite;
 
 static bool bQuit;
-static Vector2D m_input = Vector2D();
+static Vector2 m_input = Vector2();
 const float m_speed = 100.0f;
 
-Engine::JobSystem::Mutex NewGameObjectMutex;
-vector<StrongPtr<GameObject>> AllGameObjects;
-vector<StrongPtr<GameObject>> NewGameObjects;
+World* pWorld = new World();
 vector< GLib::Sprites::Sprite*> Sprites;
 
-void AddNewGameObject(StrongPtr<GameObject> i_GameObject) {
-	if (i_GameObject) {
-		Engine::JobSystem::ScopeLock Lock(NewGameObjectMutex);
-		NewGameObjects.push_back(i_GameObject);
-	}
-}
-
-void CheckNewGameObjects() {
-	Engine::JobSystem::ScopeLock Lock(NewGameObjectMutex);
-	for (auto it = NewGameObjects.begin(); it != NewGameObjects.end(); ++it)
-	{
-		AllGameObjects.push_back(*it);
-	}
-	NewGameObjects.clear();
-}
 
 class CreateGameObjectsFromFile {
 public:
@@ -71,14 +57,14 @@ public:
 		jFile.close();
 		for (auto o : j)
 		{
-			Vector2D position = Vector2D(o["position"][0], o["position"][1]);
+			Vector2 position = Vector2(o["position"][0], o["position"][1]);
 			string name = o["name"];
 			string spritePath = o["sprite"];
 			float size = o["size"];
 			string controllerName = o["controller"];
 
 			StrongPtr<GameObject> gameObject = StrongPtr<GameObject>(new GameObject(position, name));
-			AddNewGameObject(gameObject);
+			pWorld->AddNewGameObject(gameObject);
 			GLib::Sprites::Sprite* sprite = CreateSprite(spritePath.c_str(), size);
 
 			if (sprite) {
@@ -87,10 +73,18 @@ public:
 				pRendererComp->SetSprite(sprite);
 				PhysicsComponent* pPhysicsComp = new PhysicsComponent();
 				pPhysicsComp->bUseGravity = false;
+				BoxCollider* pBoxCollider = new BoxCollider();
+				unsigned int width, height, depth;
+				bool result = GLib::GetDimensions(sprite->m_pTexture, width, height, depth);
+				assert(result);
+				assert(width > 0 && height > 0);
+				pBoxCollider->Size = Vector2((float)width, (float)height);
+				pBoxCollider->Center = Vector2(0, (float)height / 2);
 				MonsterController* pController = new MonsterController(j[0]["controller"].get<MovingStrategy>());
 				gameObject->AddComponent<MonsterController>(pController);
 				gameObject->AddComponent<PhysicsComponent>(pPhysicsComp);
 				gameObject->AddComponent<RendererComponent>(pRendererComp);
+				gameObject->AddComponent<BoxCollider>(pBoxCollider);
 			}
 		}
 	}
@@ -107,15 +101,15 @@ void TestKeyCallback(unsigned int i_VKeyID, bool bWentDown)
 	if (i_VKeyID == 0x51 && !bWentDown)
 		bQuit = true;
 	if (i_VKeyID == 0x57 && bWentDown)
-		m_input = Vector2D(0, 1);
+		m_input = Vector2(0, 1);
 	if (i_VKeyID == 0x53 && bWentDown)
-		m_input = Vector2D(0, -1);
+		m_input = Vector2(0, -1);
 	if (i_VKeyID == 0x41 && bWentDown)
-		m_input = Vector2D(-1, 0);
+		m_input = Vector2(-1, 0);
 	if (i_VKeyID == 0x44 && bWentDown)
-		m_input = Vector2D(1, 0);
+		m_input = Vector2(1, 0);
 	if (!bWentDown)
-		m_input = Vector2D();
+		m_input = Vector2();
 	sprintf_s(Buffer, lenBuffer, "VKey 0x%04x went %s\n", i_VKeyID, bWentDown ? "down" : "up");
 	OutputDebugStringA(Buffer);
 
@@ -134,9 +128,9 @@ int WINAPI wWinMain(HINSTANCE i_hInstance, HINSTANCE i_hPrevInstance, LPWSTR i_l
 		// IMPORTANT (if we want keypress info from GLib): Set a callback for notification of key presses
 		GLib::SetKeyStateChangeCallback(TestKeyCallback);
 
-		StrongPtr<GameObject> pHero = StrongPtr<GameObject>(new GameObject(Vector2D(), "trevor"));
-		AddNewGameObject(pHero);
-		CheckNewGameObjects();
+		StrongPtr<GameObject> pHero = StrongPtr<GameObject>(new GameObject(Vector2(), "trevor"));
+		pWorld->AddNewGameObject(pHero);
+		pWorld->CheckNewGameObjects();
 		// Create a couple of sprites using our own helper routine CreateSprite
 		GLib::Sprites::Sprite* pGoodGuy = CreateSprite("Sprites\\hero.dds", 0.5f);
 #pragma region Initialize
@@ -145,20 +139,28 @@ int WINAPI wWinMain(HINSTANCE i_hInstance, HINSTANCE i_hPrevInstance, LPWSTR i_l
 			pRendererComp->SetSprite(pGoodGuy);
 			PhysicsComponent* pPhysicsComp = new PhysicsComponent();
 			pPhysicsComp->bUseGravity = true;
+			BoxCollider* pBoxCollider = new BoxCollider();
+			unsigned int width, height, depth;
+			bool result = GLib::GetDimensions(pGoodGuy->m_pTexture, width, height, depth);
+			assert(result);
+			assert(width > 0 && height > 0);
+			pBoxCollider->Size = Vector2((float)width, (float)height);
+			pBoxCollider->Center = Vector2(0, (float)height / 2);
 			pHero->AddComponent<PlayerController>(new PlayerController());
 			pHero->AddComponent<PhysicsComponent>(pPhysicsComp);
 			pHero->AddComponent<RendererComponent>(pRendererComp);
+			pHero->AddComponent<BoxCollider>(pBoxCollider);
 		}
 		Engine::JobSystem::CreateQueue();
 		using namespace std::placeholders;
 		{
 			Engine::JobSystem::RunJob(0, std::bind(CreateGameObjectsFromFile("objects.json")));
 			do {
-				CheckNewGameObjects();
+				pWorld->CheckNewGameObjects();
 				Sleep(10);
 			} while (Engine::JobSystem::HasJob(0));
 		}
-		CheckNewGameObjects();
+		pWorld->CheckNewGameObjects();
 #pragma endregion
 
 		do
@@ -178,9 +180,8 @@ int WINAPI wWinMain(HINSTANCE i_hInstance, HINSTANCE i_hPrevInstance, LPWSTR i_l
 				if (pGoodGuy)
 				{
 					pHero->GetComponent<PlayerController>()->SetInput(m_input);
-					pHero->Update(deltaTime);
 				}
-				for (auto o : AllGameObjects) {
+				for (auto o : pWorld->GetGameObjects()) {
 					o->Update(deltaTime);
 				}
 
@@ -200,6 +201,7 @@ int WINAPI wWinMain(HINSTANCE i_hInstance, HINSTANCE i_hPrevInstance, LPWSTR i_l
 		// IMPORTANT:  Tell GLib to shutdown, releasing resources.
 		GLib::Shutdown();
 	}
+	delete pWorld;
 
 #if defined _DEBUG
 	_CrtDumpMemoryLeaks();

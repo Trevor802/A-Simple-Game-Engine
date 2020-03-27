@@ -13,7 +13,7 @@ namespace Engine {
 		class JobQueue;
 		void CreateQueue() {
 			JobQueueData* newJobQueueData = new JobQueueData();
-			newJobQueueData->m_Queue.SetID(Queues.size());
+			newJobQueueData->m_Queue.SetID((DWORD)Queues.size());
 			Queues.push_back(newJobQueueData);
 			AddRunner(*newJobQueueData);
 		}
