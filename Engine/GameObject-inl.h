@@ -2,8 +2,9 @@
 #pragma once
 
 template <typename T>
-inline T* GameObject::AddComponent(T* i_pComponent) {
-	dynamic_cast<BaseComponent*>(i_pComponent)->gameObject = this;
-	m_Components.emplace_back(i_pComponent);
+inline StrongPtr<T> GameObject::AddComponent(StrongPtr<T>& i_pComponent) {
+	(dynamic_cast<BaseComponent*>(i_pComponent.operator->()))->gameObject = this;
+	StrongPtr<BaseComponent> base = *(reinterpret_cast<StrongPtr<BaseComponent>*>(&i_pComponent));
+	m_Components.emplace_back(base);
 	return i_pComponent;
-}
+};

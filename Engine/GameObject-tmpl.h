@@ -1,13 +1,13 @@
 #pragma once
 
 template<typename T>
-T* GameObject::GetComponent()
+StrongPtr<T> GameObject::GetComponent()
 {
 	for (auto it = m_Components.begin(); it != m_Components.end(); it++)
 	{
-		if (dynamic_cast<const T*>(it->get())) {
-			return dynamic_cast<T*>(it->get());
+		if (dynamic_cast<const T*>((*it).operator->())) {
+			return *(reinterpret_cast<StrongPtr<T>*>(&(*it)));
 		}
 	}
-	return NULL;
+	return StrongPtr<T>();
 }

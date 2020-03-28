@@ -69,22 +69,22 @@ public:
 
 			if (sprite) {
 				Sprites.push_back(sprite);
-				RendererComponent* pRendererComp = new RendererComponent();
-				pRendererComp->SetSprite(sprite);
-				PhysicsComponent* pPhysicsComp = new PhysicsComponent();
-				pPhysicsComp->bUseGravity = false;
-				BoxCollider* pBoxCollider = new BoxCollider();
+				StrongPtr<RendererComponent> renderer = StrongPtr<RendererComponent>(new RendererComponent());
+				renderer->SetSprite(sprite);
+				StrongPtr<PhysicsComponent> physics = StrongPtr<PhysicsComponent>(new PhysicsComponent());
+				physics->bUseGravity = false;
+				StrongPtr<BoxCollider> boxCollider = StrongPtr<BoxCollider>(new BoxCollider());
 				unsigned int width, height, depth;
 				bool result = GLib::GetDimensions(sprite->m_pTexture, width, height, depth);
 				assert(result);
 				assert(width > 0 && height > 0);
-				pBoxCollider->Size = Vector2((float)width, (float)height);
-				pBoxCollider->Center = Vector2(0, (float)height / 2);
-				MonsterController* pController = new MonsterController(j[0]["controller"].get<MovingStrategy>());
-				gameObject->AddComponent<MonsterController>(pController);
-				gameObject->AddComponent<PhysicsComponent>(pPhysicsComp);
-				gameObject->AddComponent<RendererComponent>(pRendererComp);
-				gameObject->AddComponent<BoxCollider>(pBoxCollider);
+				boxCollider->Size = Vector2((float)width, (float)height);
+				boxCollider->Center = Vector2(0, (float)height / 2);
+				StrongPtr<MonsterController> controller = StrongPtr<MonsterController>(new MonsterController(j[0]["controller"].get<MovingStrategy>()));
+				gameObject->AddComponent<MonsterController>(controller);
+				gameObject->AddComponent<PhysicsComponent>(physics);
+				gameObject->AddComponent<RendererComponent>(renderer);
+				gameObject->AddComponent<BoxCollider>(boxCollider);
 			}
 		}
 	}
@@ -135,21 +135,22 @@ int WINAPI wWinMain(HINSTANCE i_hInstance, HINSTANCE i_hPrevInstance, LPWSTR i_l
 		GLib::Sprites::Sprite* pGoodGuy = CreateSprite("Sprites\\hero.dds", 0.5f);
 #pragma region Initialize
 		if (pGoodGuy) {
-			RendererComponent* pRendererComp = new RendererComponent();
-			pRendererComp->SetSprite(pGoodGuy);
-			PhysicsComponent* pPhysicsComp = new PhysicsComponent();
-			pPhysicsComp->bUseGravity = true;
-			BoxCollider* pBoxCollider = new BoxCollider();
+			StrongPtr<RendererComponent> renderer = StrongPtr<RendererComponent>(new RendererComponent());
+			renderer->SetSprite(pGoodGuy);
+			StrongPtr<PhysicsComponent> physics = StrongPtr<PhysicsComponent>(new PhysicsComponent());
+			physics->bUseGravity = true;
+			StrongPtr<BoxCollider> boxCollider = StrongPtr<BoxCollider>(new BoxCollider());
 			unsigned int width, height, depth;
 			bool result = GLib::GetDimensions(pGoodGuy->m_pTexture, width, height, depth);
 			assert(result);
 			assert(width > 0 && height > 0);
-			pBoxCollider->Size = Vector2((float)width, (float)height);
-			pBoxCollider->Center = Vector2(0, (float)height / 2);
-			pHero->AddComponent<PlayerController>(new PlayerController());
-			pHero->AddComponent<PhysicsComponent>(pPhysicsComp);
-			pHero->AddComponent<RendererComponent>(pRendererComp);
-			pHero->AddComponent<BoxCollider>(pBoxCollider);
+			boxCollider->Size = Vector2((float)width, (float)height);
+			boxCollider->Center = Vector2(0, (float)height / 2);
+			pHero->AddComponent<PhysicsComponent>(physics);
+			StrongPtr<PlayerController> controller = StrongPtr<PlayerController>(new PlayerController());
+			pHero->AddComponent<PlayerController>(controller);
+			pHero->AddComponent<RendererComponent>(renderer);
+			pHero->AddComponent<BoxCollider>(boxCollider);
 		}
 		Engine::JobSystem::CreateQueue();
 		using namespace std::placeholders;

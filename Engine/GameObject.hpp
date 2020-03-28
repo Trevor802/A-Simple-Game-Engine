@@ -31,7 +31,7 @@ public:
 private:
     Vector2 m_Position;
     float m_RotRadians;
-    vector<unique_ptr<BaseComponent>> m_Components;
+    vector<StrongPtr<BaseComponent>> m_Components;
     
 public:
     Vector2 GetPosition() const { return m_Position; };
@@ -47,10 +47,10 @@ public:
         return m_Position;
     };
     template <typename T>
-    inline T* AddComponent(T* i_pComponent);
+    inline StrongPtr<T> AddComponent(StrongPtr<T>& i_pComponent);
 
     template <typename T>
-    T* GetComponent();
+    StrongPtr<T> GetComponent();
 };
 
 #include "GameObject-inl.h"
