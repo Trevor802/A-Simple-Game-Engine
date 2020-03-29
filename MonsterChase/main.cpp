@@ -127,10 +127,14 @@ int WINAPI wWinMain(HINSTANCE i_hInstance, HINSTANCE i_hPrevInstance, LPWSTR i_l
 	{
 		// IMPORTANT (if we want keypress info from GLib): Set a callback for notification of key presses
 		GLib::SetKeyStateChangeCallback(TestKeyCallback);
-
-		StrongPtr<GameObject> pHero = StrongPtr<GameObject>(new GameObject(Vector2(), "trevor"));
-		pWorld->AddNewGameObject(pHero);
-		pWorld->CheckNewGameObjects();
+		WeakPtr<GameObject> hero;
+		{
+			StrongPtr<GameObject> pHero = StrongPtr<GameObject>(new GameObject(Vector2(), "trevor"));
+			pWorld->AddNewGameObject(pHero);
+			pWorld->CheckNewGameObjects();
+			hero = pHero;
+		}
+		
 		// Create a couple of sprites using our own helper routine CreateSprite
 		GLib::Sprites::Sprite* pGoodGuy = CreateSprite("Sprites\\hero.dds", 0.5f);
 #pragma region Initialize
@@ -146,11 +150,13 @@ int WINAPI wWinMain(HINSTANCE i_hInstance, HINSTANCE i_hPrevInstance, LPWSTR i_l
 			assert(width > 0 && height > 0);
 			boxCollider->Size = Vector2((float)width, (float)height);
 			boxCollider->Center = Vector2(0, (float)height / 2);
-			pHero->AddComponent<PhysicsComponent>(physics);
-			StrongPtr<PlayerController> controller = StrongPtr<PlayerController>(new PlayerController());
-			pHero->AddComponent<PlayerController>(controller);
-			pHero->AddComponent<RendererComponent>(renderer);
-			pHero->AddComponent<BoxCollider>(boxCollider);
+			if (hero) {
+				hero->AddComponent<PhysicsComponent>(physics);
+				StrongPtr<PlayerController> controller = StrongPtr<PlayerController>(new PlayerController());
+				hero->AddComponent<PlayerController>(controller);
+				hero->AddComponent<RendererComponent>(renderer);
+				hero->AddComponent<BoxCollider>(boxCollider);
+			}
 		}
 		Engine::JobSystem::CreateQueue();
 		using namespace std::placeholders;
@@ -180,7 +186,7 @@ int WINAPI wWinMain(HINSTANCE i_hInstance, HINSTANCE i_hPrevInstance, LPWSTR i_l
 
 				if (pGoodGuy)
 				{
-					pHero->GetComponent<PlayerController>()->SetInput(m_input);
+					hero->GetComponent<PlayerController>()->SetInput(m_input);
 				}
 				for (auto o : pWorld->GetGameObjects()) {
 					o->Update(deltaTime);
