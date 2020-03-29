@@ -4,7 +4,6 @@
 class PhysicsComponent : public BaseComponent
 {
 public:
-	PhysicsComponent() : BaseComponent() { };
 	void Update(float DeltaTime) override;
 
 	inline Vector2 GetVelocity() const;

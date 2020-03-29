@@ -12,6 +12,7 @@
 #include "BaseComponent.h"
 #include "RendererComponent.h"
 #include "PhysicsComponent.h"
+#include "CollisionManager.h"
 #include "BoxCollider.h"
 #include "PlayerController.hpp"
 #include "MonsterController.hpp"
@@ -44,6 +45,7 @@ static Vector2 m_input = Vector2();
 const float m_speed = 100.0f;
 
 World* pWorld = new World();
+CollisionManager* pCollisionManager = new CollisionManager();
 vector< GLib::Sprites::Sprite*> Sprites;
 
 
@@ -64,6 +66,7 @@ public:
 			string controllerName = o["controller"];
 
 			StrongPtr<GameObject> gameObject = StrongPtr<GameObject>(new GameObject(position, name));
+			gameObject->self = gameObject;
 			pWorld->AddNewGameObject(gameObject);
 			GLib::Sprites::Sprite* sprite = CreateSprite(spritePath.c_str(), size);
 
@@ -130,6 +133,7 @@ int WINAPI wWinMain(HINSTANCE i_hInstance, HINSTANCE i_hPrevInstance, LPWSTR i_l
 		WeakPtr<GameObject> hero;
 		{
 			StrongPtr<GameObject> pHero = StrongPtr<GameObject>(new GameObject(Vector2(), "trevor"));
+			pHero->self = pHero;
 			pWorld->AddNewGameObject(pHero);
 			pWorld->CheckNewGameObjects();
 			hero = pHero;
@@ -209,6 +213,7 @@ int WINAPI wWinMain(HINSTANCE i_hInstance, HINSTANCE i_hPrevInstance, LPWSTR i_l
 		GLib::Shutdown();
 	}
 	delete pWorld;
+	delete pCollisionManager;
 
 #if defined _DEBUG
 	_CrtDumpMemoryLeaks();

@@ -51,6 +51,9 @@ public:
 
     template <typename T>
     StrongPtr<T> GetComponent();
+
+    // self weak reference
+    WeakPtr<GameObject> self;
 };
 
 #include "GameObject-inl.h"

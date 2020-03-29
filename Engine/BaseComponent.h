@@ -1,4 +1,5 @@
 #pragma once
+#include "SmartPtr.h"
 
 class GameObject;
 class BaseComponent
@@ -10,6 +11,5 @@ public:
 	virtual void Update(float DeltaTime) {};
 
 public:
-	// TODO delete gameObject
-	GameObject* gameObject;
+	WeakPtr<GameObject> gameObject;
 };

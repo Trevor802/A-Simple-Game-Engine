@@ -11,7 +11,6 @@
 
 class PlayerController : public BaseComponent{
 public:
-    PlayerController() : BaseComponent() {};
     void Update(float DeltaTime) override;
     inline void SetInput(Vector2 i_Input) { m_Input = i_Input; }
 
