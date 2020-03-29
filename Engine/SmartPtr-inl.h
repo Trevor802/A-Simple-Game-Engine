@@ -16,6 +16,11 @@ inline T* StrongPtr<T>::operator->() { return m_ptr; }
 
 template<typename T>
 inline T& StrongPtr<T>::operator*() {
+	return Acquire();
+}
+
+template<typename T>
+inline T& StrongPtr<T>::Acquire() const {
 	assert(m_ptr != nullptr);
 	return *m_ptr;
 }
@@ -49,6 +54,11 @@ inline T* WeakPtr<T>::operator->() { return m_ptr; }
 
 template<typename T>
 inline T& WeakPtr<T>::operator*() {
+	return Acquire();
+}
+
+template<typename T>
+inline T& WeakPtr<T>::Acquire() const {
 	assert(m_ptr != nullptr);
 	return *m_ptr;
 }

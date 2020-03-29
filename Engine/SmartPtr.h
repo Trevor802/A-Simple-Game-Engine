@@ -30,6 +30,7 @@ public:
 
 	inline T* operator->();
 	inline T& operator*();
+	inline T& Acquire() const;
 	inline operator bool() const;
 	template<typename U>
 	inline bool operator==(const StrongPtr<U>& i_other) const;
@@ -67,6 +68,7 @@ public:
 
 	inline T* operator->();
 	inline T& operator*();
+	inline T& Acquire() const;
 	inline operator bool() const;
 	inline bool IsValid() const;
 	template<typename U>

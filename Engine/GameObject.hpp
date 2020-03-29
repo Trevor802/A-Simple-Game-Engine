@@ -51,6 +51,8 @@ public:
 
     template <typename T>
     StrongPtr<T> GetComponent();
+    template <typename T>
+    bool HasComponent();
 
     // self weak reference
     WeakPtr<GameObject> self;
