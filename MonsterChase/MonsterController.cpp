@@ -37,6 +37,8 @@ Vector2 MonsterController::getMovingDirection()
         else if (gameObject->GetPosition().x < 160.0f)
             dir = 1;
         break;
+    case MovingStrategy::Static:
+        break;
     case MovingStrategy::Invalid:
         throw invalid_argument("Invalid enum");
         break;

@@ -17,6 +17,7 @@ enum MovingStrategy{
     ChaseTarget, 
     Random, 
     Patrol,
+    Static,
     Invalid = -1
 };
 
@@ -24,6 +25,7 @@ NLOHMANN_JSON_SERIALIZE_ENUM(MovingStrategy, {
     {ChaseTarget, "ChaseTarget"},
     {Random, "Random"},
     {Patrol, "Patrol"},
+    {Static, "Static"},
     {Invalid, nullptr}
 })
 

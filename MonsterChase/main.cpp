@@ -60,12 +60,14 @@ public:
 		for (auto o : j)
 		{
 			Vector2 position = Vector2(o["position"][0], o["position"][1]);
+			float rot = o["rotation"];
 			string name = o["name"];
 			string spritePath = o["sprite"];
 			float size = o["size"];
 			string controllerName = o["controller"];
 
 			StrongPtr<GameObject> gameObject = StrongPtr<GameObject>(new GameObject(position, name));
+			gameObject->SetRotation(rot);
 			gameObject->self = gameObject;
 			pWorld->AddNewGameObject(gameObject);
 			GLib::Sprites::Sprite* sprite = CreateSprite(spritePath.c_str(), size);
@@ -81,7 +83,7 @@ public:
 				bool result = GLib::GetDimensions(sprite->m_pTexture, width, height, depth);
 				assert(result);
 				assert(width > 0 && height > 0);
-				boxCollider->Size = Vector2((float)width, (float)height);
+				boxCollider->Size = Vector2((float)width / 2, (float)height / 2);
 				boxCollider->Center = Vector2(0, (float)height / 2);
 				StrongPtr<MonsterController> controller = StrongPtr<MonsterController>(new MonsterController(j[0]["controller"].get<MovingStrategy>()));
 				gameObject->AddComponent<MonsterController>(controller);
@@ -132,7 +134,7 @@ int WINAPI wWinMain(HINSTANCE i_hInstance, HINSTANCE i_hPrevInstance, LPWSTR i_l
 		GLib::SetKeyStateChangeCallback(TestKeyCallback);
 		WeakPtr<GameObject> hero;
 		{
-			StrongPtr<GameObject> pHero = StrongPtr<GameObject>(new GameObject(Vector2(), "trevor"));
+			StrongPtr<GameObject> pHero = StrongPtr<GameObject>(new GameObject(Vector2(-300, -200), "trevor"));
 			pHero->self = pHero;
 			pWorld->AddNewGameObject(pHero);
 			pWorld->CheckNewGameObjects();
@@ -140,19 +142,19 @@ int WINAPI wWinMain(HINSTANCE i_hInstance, HINSTANCE i_hPrevInstance, LPWSTR i_l
 		}
 		
 		// Create a couple of sprites using our own helper routine CreateSprite
-		GLib::Sprites::Sprite* pGoodGuy = CreateSprite("Sprites\\hero.dds", 0.5f);
+		GLib::Sprites::Sprite* pGoodGuy = CreateSprite("Sprites\\yellow.dds", 1.f);
 #pragma region Initialize
 		if (pGoodGuy) {
 			StrongPtr<RendererComponent> renderer = StrongPtr<RendererComponent>(new RendererComponent());
 			renderer->SetSprite(pGoodGuy);
 			StrongPtr<PhysicsComponent> physics = StrongPtr<PhysicsComponent>(new PhysicsComponent());
-			physics->bUseGravity = true;
+			physics->bUseGravity = false;
 			StrongPtr<BoxCollider> boxCollider = StrongPtr<BoxCollider>(new BoxCollider());
 			unsigned int width, height, depth;
 			bool result = GLib::GetDimensions(pGoodGuy->m_pTexture, width, height, depth);
 			assert(result);
 			assert(width > 0 && height > 0);
-			boxCollider->Size = Vector2((float)width, (float)height);
+			boxCollider->Size = Vector2((float)width / 2, (float)height / 2);
 			boxCollider->Center = Vector2(0, (float)height / 2);
 			if (hero) {
 				hero->AddComponent<PhysicsComponent>(physics);
@@ -187,7 +189,6 @@ int WINAPI wWinMain(HINSTANCE i_hInstance, HINSTANCE i_hPrevInstance, LPWSTR i_l
 				GLib::BeginRendering();
 				// Tell GLib that we want to render some sprites
 				GLib::Sprites::BeginRendering();
-
 				if (pGoodGuy)
 				{
 					hero->GetComponent<PlayerController>()->SetInput(m_input);
@@ -195,6 +196,8 @@ int WINAPI wWinMain(HINSTANCE i_hInstance, HINSTANCE i_hPrevInstance, LPWSTR i_l
 				for (auto o : pWorld->GetGameObjects()) {
 					o->Update(deltaTime);
 				}
+				pCollisionManager->SetColliders(pWorld);
+				pCollisionManager->ProcessCollisions();
 
 				// Tell GLib we're done rendering sprites
 				GLib::Sprites::EndRendering();

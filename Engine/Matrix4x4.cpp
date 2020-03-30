@@ -5,7 +5,7 @@ namespace Engine {
 	const bool Matrix4x4::operator==(const Matrix4x4& i_rhs) const
 	{
 		for (int i = 0; i < 16; i++) {
-			if (!Numeric::AreEqual(_m[i], i_rhs._m[i]))
+			if (!Numeric::AreEqual(m._m[i], i_rhs.m._m[i]))
 				return false;
 		}
 		return true;
@@ -114,25 +114,33 @@ namespace Engine {
 	}
 	Matrix4x4 Matrix4x4::getInverse() const
 	{
-		float det = GetDet3x3();
+		float det = Matrix::GetDet4x4(m);
 		assert(!Numeric::AreEqual(det, 0.0f));
-		float r00 = GetDet2x2(m[1][1], m[2][1], m[1][2], m[2][2]) / det;
-		float r01 = GetDet2x2(m[2][1], m[0][1], m[2][2], m[0][2]) / det;
-		float r02 = GetDet2x2(m[0][1], m[1][1], m[0][2], m[1][2]) / det;
+		float m00 = GetDet3x3(ConvertTo3x3(m, 0, 0)) / det;
+		float m01 = -GetDet3x3(ConvertTo3x3(m, 0, 1)) / det;
+		float m02 = GetDet3x3(ConvertTo3x3(m, 0, 2)) / det;
+		float m03 = -GetDet3x3(ConvertTo3x3(m, 0, 3)) / det;
 
-		float r10 = GetDet2x2(m[1][2], m[2][2], m[1][0], m[2][0]) / det;
-		float r11 = GetDet2x2(m[2][2], m[0][2], m[2][0], m[0][0]) / det;
-		float r12 = GetDet2x2(m[0][2], m[2][2], m[0][0], m[2][0]) / det;
+		float m10 = -GetDet3x3(ConvertTo3x3(m, 1, 0)) / det;
+		float m11 = GetDet3x3(ConvertTo3x3(m, 1, 1)) / det;
+		float m12 = -GetDet3x3(ConvertTo3x3(m, 1, 2)) / det;
+		float m13 = GetDet3x3(ConvertTo3x3(m, 1, 3)) / det;
 
-		float r20 = GetDet2x2(m[1][0], m[2][0], m[1][1], m[2][1]) / det;
-		float r21 = GetDet2x2(m[2][0], m[0][0], m[2][1], m[0][1]) / det;
-		float r22 = GetDet2x2(m[0][0], m[1][0], m[0][1], m[1][1]) / det;
+		float m20 = GetDet3x3(ConvertTo3x3(m, 2, 0)) / det;
+		float m21 = -GetDet3x3(ConvertTo3x3(m, 2, 1)) / det;
+		float m22 = GetDet3x3(ConvertTo3x3(m, 2, 2)) / det;
+		float m23 = -GetDet3x3(ConvertTo3x3(m, 2, 3)) / det;
+
+		float m30 = -GetDet3x3(ConvertTo3x3(m, 3, 0)) / det;
+		float m31 = GetDet3x3(ConvertTo3x3(m, 3, 1)) / det;
+		float m32 = -GetDet3x3(ConvertTo3x3(m, 3, 2)) / det;
+		float m33 = GetDet3x3(ConvertTo3x3(m, 3, 3)) / det;
 
 		return Matrix4x4(
-			r00,	r01,	r02,	0,
-			r10,	r11,	r12,	0,
-			r20,	r21,	r22,	0,
-			0,		0,		0,		1
+			m00,	m10,	m20,	m30,
+			m01,	m11,	m21,	m31,
+			m02,	m12,	m22,	m32,
+			m03,	m13,	m23,	m33
 		);
 	}
 	const Matrix4x4 Matrix4x4::Identity(

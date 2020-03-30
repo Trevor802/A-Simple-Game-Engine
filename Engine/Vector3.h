@@ -1,11 +1,13 @@
 #pragma once
 #include <iostream>
+#include "Vector2.hpp"
 namespace Engine {
 	class Vector3
 	{
 	public:
 		Vector3(void);
 		Vector3(float i_x, float i_y, float i_z);
+		Vector3(const Vector2& i_v, float z = 0.0f);
 		Vector3(const Vector3& i_other);
 		Vector3& operator=(const Vector3& i_other);
 		Vector3(Vector3&& i_other) noexcept;

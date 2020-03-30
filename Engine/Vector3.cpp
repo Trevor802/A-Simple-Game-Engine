@@ -8,6 +8,8 @@ namespace Engine {
 
 	Vector3::Vector3(float i_x, float i_y, float i_z) : m_x(i_x), m_y(i_y), m_z(i_z) {}
 
+	Vector3::Vector3(const Vector2& i_v, float z) : m_x(i_v.x), m_y(i_v.y), m_z(z) {}
+
 	Vector3::Vector3(const Vector3& i_other) : m_x(i_other.m_x), m_y(i_other.m_y), m_z(i_other.m_z) {}
 
 	Vector3& Vector3::operator=(const Vector3& i_other)
