@@ -38,11 +38,11 @@ private:
 
 		Matrix4x4 mRot = Matrix4x4::CreateZRotation(A.GetRotRad());
 		Matrix4x4 mTrans = Matrix4x4::CreateTranslation(A.GetPosition());
-		Matrix4x4 mAToWorld = mRot * mTrans;
+		Matrix4x4 mAToWorld = mTrans * mRot;
 		Matrix4x4 mWorldToA = mAToWorld.getInverse();
 		mRot = Matrix4x4::CreateZRotation(B.GetRotRad());
 		mTrans = Matrix4x4::CreateTranslation(B.GetPosition());
-		Matrix4x4 mBToWorld = mRot * mTrans;
+		Matrix4x4 mBToWorld = mTrans * mRot;
 		Matrix4x4 mWorldToB = mBToWorld.getInverse();
 
 		Matrix4x4 mAToB = mWorldToB * mAToWorld;
