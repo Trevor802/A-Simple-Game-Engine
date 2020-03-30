@@ -7,7 +7,7 @@ namespace Engine {
 	public:
 		Vector4(void);
 		Vector4(float i_x, float i_y, float i_z, float i_w);
-		Vector4(const Vector3& i_other);
+		Vector4(const Vector3& i_other, float i_w = 1.0);
 		Vector4(const Vector4& i_other);
 		Vector4& operator=(const Vector4& i_other);
 		Vector4(Vector4&& i_other) noexcept;

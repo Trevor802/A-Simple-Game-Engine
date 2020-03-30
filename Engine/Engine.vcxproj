@@ -203,6 +203,7 @@
     <ClInclude Include="SmartPtr-inl.h" />
     <ClInclude Include="SmartPtr-tmpl.h" />
     <ClInclude Include="SmartPtr.h" />
+    <ClInclude Include="TimeManager.h" />
     <ClInclude Include="Vector2-inl.hpp" />
     <ClInclude Include="Vector2.hpp" />
     <ClInclude Include="Vector3.h" />

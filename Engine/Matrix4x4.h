@@ -5,17 +5,17 @@
 #include "Vector2.hpp"
 namespace Engine {
 	namespace Matrix {
-		static union M4
+		union M4
 		{
 			float m[4][4];
 			float _m[16];
 		};
-		static union M3
+		union M3
 		{
 			float m[3][3];
 			float _m[9];
 		};
-		static union M2
+		union M2
 		{
 			float m[2][2];
 			float _m[4];

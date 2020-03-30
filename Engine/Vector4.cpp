@@ -8,7 +8,7 @@ namespace Engine {
 
 	Vector4::Vector4(float i_x, float i_y, float i_z, float i_w) : m_x(i_x), m_y(i_y), m_z(i_z), m_w(i_w) {}
 
-	Vector4::Vector4(const Vector3& i_other) : m_x(i_other.GetX()), m_y(i_other.GetY()), m_z(i_other.GetZ()), m_w(1) {}
+	Vector4::Vector4(const Vector3& i_other, float i_w) : m_x(i_other.GetX()), m_y(i_other.GetY()), m_z(i_other.GetZ()), m_w(i_w) {}
 
 	Vector4::Vector4(const Vector4& i_other) : m_x(i_other.m_x), m_y(i_other.m_y), m_z(i_other.m_z), m_w(i_other.m_w) {}
 

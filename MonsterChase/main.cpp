@@ -23,6 +23,7 @@
 #include "World.h"
 #include <thread>
 #include "JobSystem.h"
+#include "TimeManager.h"
 #include "ScopeLock.h"
 #include "Mutex.h"
 
@@ -35,6 +36,7 @@
 
 using namespace std;
 using json = nlohmann::json;
+using namespace Engine;
 
 void* LoadFile(const char* i_pFilename, size_t& o_sizeFile);
 GLib::Sprites::Sprite* CreateSprite(const char* i_pFilename, float i_Scale);
@@ -125,8 +127,8 @@ int WINAPI wWinMain(HINSTANCE i_hInstance, HINSTANCE i_hPrevInstance, LPWSTR i_l
 {
 	// IMPORTANT: first we need to initialize GLib
 	bool bSuccess = GLib::Initialize(i_hInstance, i_nCmdShow, "GLibTest", -1, 800, 600);
-	auto oldTime = chrono::high_resolution_clock::now();
-	float deltaTime;
+	Time::firstFrameTime = chrono::high_resolution_clock::now();
+	Time::lastFrameTime = chrono::high_resolution_clock::now();
 
 	if (bSuccess)
 	{
@@ -142,7 +144,7 @@ int WINAPI wWinMain(HINSTANCE i_hInstance, HINSTANCE i_hPrevInstance, LPWSTR i_l
 		}
 		
 		// Create a couple of sprites using our own helper routine CreateSprite
-		GLib::Sprites::Sprite* pGoodGuy = CreateSprite("Sprites\\yellow.dds", 1.f);
+		GLib::Sprites::Sprite* pGoodGuy = CreateSprite("Sprites\\green.dds", 1.f);
 #pragma region Initialize
 		if (pGoodGuy) {
 			StrongPtr<RendererComponent> renderer = StrongPtr<RendererComponent>(new RendererComponent());
@@ -178,13 +180,21 @@ int WINAPI wWinMain(HINSTANCE i_hInstance, HINSTANCE i_hPrevInstance, LPWSTR i_l
 
 		do
 		{
-			deltaTime = chrono::duration_cast<chrono::duration<float>>(chrono::high_resolution_clock::now() - oldTime).count();
-			oldTime = chrono::high_resolution_clock::now();
+			Time::deltaTime = chrono::duration_cast<chrono::duration<float>>(chrono::high_resolution_clock::now() - Time::lastFrameTime).count();
+			Time::lastFrameTime = chrono::high_resolution_clock::now();
 			// IMPORTANT: We need to let GLib do it's thing. 
 			GLib::Service(bQuit);
 		
 			if (!bQuit)
 			{
+				// Fixed update: physics
+				if (chrono::duration_cast<chrono::duration<float>>(
+					Time::lastFrameTime - Time::lastFixedFrameTime).count() > Time::fixedDeltaTime) {
+					pCollisionManager->SetColliders(pWorld);
+					pCollisionManager->ProcessCollisions();
+					Time::lastFixedFrameTime = chrono::high_resolution_clock::now();
+				}
+
 				// IMPORTANT: Tell GLib that we want to start rendering
 				GLib::BeginRendering();
 				// Tell GLib that we want to render some sprites
@@ -194,10 +204,8 @@ int WINAPI wWinMain(HINSTANCE i_hInstance, HINSTANCE i_hPrevInstance, LPWSTR i_l
 					hero->GetComponent<PlayerController>()->SetInput(m_input);
 				}
 				for (auto o : pWorld->GetGameObjects()) {
-					o->Update(deltaTime);
+					o->Update(Time::deltaTime);
 				}
-				pCollisionManager->SetColliders(pWorld);
-				pCollisionManager->ProcessCollisions();
 
 				// Tell GLib we're done rendering sprites
 				GLib::Sprites::EndRendering();
