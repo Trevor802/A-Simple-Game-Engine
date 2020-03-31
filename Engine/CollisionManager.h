@@ -57,7 +57,7 @@ private:
 		float lastCloseTime = FLT_MIN;
 		float firstOpenTime = FLT_MAX;
 
-		float nextFrameTime = Time::GetLastFixedFrameTime() + Time::fixedDeltaTime;
+		float nextFrameTime = Time::fixedDeltaTime;
 
 		// Check A to B
 		Vector4 velAInB = mWorldToB * Vector4(velAToB, 0.0f);
