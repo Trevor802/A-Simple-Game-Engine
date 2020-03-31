@@ -44,6 +44,10 @@ namespace Engine {
 		inline void SetZ(float i_z) { m_z = i_z; }
 		inline void SetW(float i_w) { m_w = i_w; }
 
+		inline Vector3 ToVector3() const {
+			return Vector3(m_x, m_y, m_z);
+		}
+
 		inline friend std::ostream& operator<<(std::ostream& os, const Vector4& i_vec) {
 			os << "(" << i_vec.m_x << "," << i_vec.m_y << "," << i_vec.m_z << "," << i_vec.m_w << ")";
 			return os;

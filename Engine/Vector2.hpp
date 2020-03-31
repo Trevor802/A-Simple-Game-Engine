@@ -47,6 +47,8 @@ public:
 
     inline float SqrMagnitude() const;
 
+    const float DotProduct(const Vector2& i_rhs) const;
+
     inline Vector2 Normalize() const;
 
     inline char* ToString() const;

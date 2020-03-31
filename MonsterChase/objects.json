@@ -5,6 +5,6 @@
 		"rotation": -45,
 		"sprite": "Sprites\\red.dds",
 		"size": 1,
-		"controller": "Static"
+		"controller": "Patrol"
 	}
 ]

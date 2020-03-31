@@ -2,13 +2,13 @@
 #include "Numeric.h"
 
 namespace Engine {
+	Matrix4x4 Matrix4x4::operator*(const Matrix4x4& m2) const
+	{
+		return Matrix4x4(m * m2.m);
+	}
 	const bool Matrix4x4::operator==(const Matrix4x4& i_rhs) const
 	{
-		for (int i = 0; i < 16; i++) {
-			if (!Numeric::AreEqual(m._m[i], i_rhs.m._m[i]))
-				return false;
-		}
-		return true;
+		return m == i_rhs.m;
 	}
 	const bool Matrix4x4::operator!=(const Matrix4x4& i_rhs) const
 	{
@@ -112,41 +112,36 @@ namespace Engine {
 			0, 0, 0, 1
 		);
 	}
+	M4 Matrix4x4::CreateTransformMatrix(const M3& m2)
+	{
+		M4 r;
+		r.m[0][0] = m2.m[0][0]; r.m[0][1] = m2.m[0][1]; r.m[0][2] = m2.m[0][2]; r.m[0][3] = 0;
+		r.m[1][0] = m2.m[1][0]; r.m[1][1] = m2.m[1][1]; r.m[1][2] = m2.m[1][2]; r.m[1][3] = 0;
+		r.m[2][0] = m2.m[2][0]; r.m[2][1] = m2.m[2][1]; r.m[2][2] = m2.m[2][2]; r.m[2][3] = 0;
+		r.m[3][0] = 0;			r.m[3][1] = 0;			r.m[3][2] = 0;			r.m[3][3] = 1;
+		return r;
+	}
+	bool Matrix4x4::IsValid(const M4& m)
+	{
+		return !(
+			Numeric::AreEqual(m.m[3][0], 0) && Numeric::AreEqual(m.m[3][1], 0) &&
+			Numeric::AreEqual(m.m[3][2], 0) && Numeric::AreEqual(m.m[3][3], 1));
+	}
 	Matrix4x4 Matrix4x4::getInverse() const
 	{
-		float det = Matrix::GetDet4x4(m);
+		float det = Matrix::GetDet(m);
 		assert(!Numeric::AreEqual(det, 0.0f));
-		float m00 = GetDet3x3(ConvertTo3x3(m, 0, 0)) / det;
-		float m01 = -GetDet3x3(ConvertTo3x3(m, 0, 1)) / det;
-		float m02 = GetDet3x3(ConvertTo3x3(m, 0, 2)) / det;
-		float m03 = -GetDet3x3(ConvertTo3x3(m, 0, 3)) / det;
+		if (IsValid(m)) {
+			M3 t = ConvertToM3(Matrix::GetTranspose(m), 3, 3);
+			M4 r = CreateTransformMatrix(t);
+			Vector3 trans = Matrix::GetCol(m, 3).ToVector3();
+			Vector3 transI = t * trans * -1;
+			r.m[0][3] = transI.GetX();
+			r.m[1][3] = transI.GetY();
+			r.m[2][3] = transI.GetZ();
+			return r;
+		}
 
-		float m10 = -GetDet3x3(ConvertTo3x3(m, 1, 0)) / det;
-		float m11 = GetDet3x3(ConvertTo3x3(m, 1, 1)) / det;
-		float m12 = -GetDet3x3(ConvertTo3x3(m, 1, 2)) / det;
-		float m13 = GetDet3x3(ConvertTo3x3(m, 1, 3)) / det;
-
-		float m20 = GetDet3x3(ConvertTo3x3(m, 2, 0)) / det;
-		float m21 = -GetDet3x3(ConvertTo3x3(m, 2, 1)) / det;
-		float m22 = GetDet3x3(ConvertTo3x3(m, 2, 2)) / det;
-		float m23 = -GetDet3x3(ConvertTo3x3(m, 2, 3)) / det;
-
-		float m30 = -GetDet3x3(ConvertTo3x3(m, 3, 0)) / det;
-		float m31 = GetDet3x3(ConvertTo3x3(m, 3, 1)) / det;
-		float m32 = -GetDet3x3(ConvertTo3x3(m, 3, 2)) / det;
-		float m33 = GetDet3x3(ConvertTo3x3(m, 3, 3)) / det;
-
-		return Matrix4x4(
-			m00,	m10,	m20,	m30,
-			m01,	m11,	m21,	m31,
-			m02,	m12,	m22,	m32,
-			m03,	m13,	m23,	m33
-		);
+		return Matrix4x4(Matrix::GetInverse(m));
 	}
-	const Matrix4x4 Matrix4x4::Identity(
-		1, 0, 0, 0,
-		0, 1, 0, 0,
-		0, 0, 1, 0,
-		0, 0, 0, 1
-	);
 }

@@ -1,87 +1,10 @@
 #pragma once
 #include <iostream>
+#include "Matrix.h"
 #include "Vector4.h"
 #include "Vector3.h"
 #include "Vector2.hpp"
 namespace Engine {
-	namespace Matrix {
-		union M4
-		{
-			float m[4][4];
-			float _m[16];
-		};
-		union M3
-		{
-			float m[3][3];
-			float _m[9];
-		};
-		union M2
-		{
-			float m[2][2];
-			float _m[4];
-		};
-		static float GetDet2x2(const M2& m) {
-			return m.m[0][0] * m.m[1][1] - m.m[0][1] * m.m[1][0];
-		}
-		static M2 ConvertTo2x2(const M3& i_m, int row, int col) {
-			M2 m;
-			int rowShift = 0;
-			for (int i = 0; i < 3; i++) {
-				if (i == row) {
-					rowShift = 1;
-					continue;
-				};
-				int colShift = 0;
-				for (int j = 0; j < 3; j++) {
-					if (j == col) {
-						colShift = 1;
-						continue;
-					}
-					m.m[i-rowShift][j-colShift] = i_m.m[i][j];
-				}
-			}
-			return m;
-		}
-		static float GetDet3x3(const M3& i_m) {
-			M2 m00 = ConvertTo2x2(i_m, 0, 0);
-			M2 m01 = ConvertTo2x2(i_m, 0, 1);
-			M2 m02 = ConvertTo2x2(i_m, 0, 2);
-			return
-				i_m.m[0][0] * GetDet2x2(m00) -
-				i_m.m[0][1] * GetDet2x2(m01) +
-				i_m.m[0][2] * GetDet2x2(m02);
-		}
-		static M3 ConvertTo3x3(const M4& i_m, int row, int col) {
-			M3 m;
-			int rowShift = 0;
-			for (int i = 0; i < 4; i++) {
-				if (i == row) {
-					rowShift = 1;
-					continue;
-				};
-				int colShift = 0;
-				for (int j = 0; j < 4; j++) {
-					if (j == col) {
-						colShift = 1;
-						continue;
-					}
-					m.m[i - rowShift][j - colShift] = i_m.m[i][j];
-				}
-			}
-			return m;
-		}
-		static float GetDet4x4(const M4& i_m) {
-			M3 m00 = ConvertTo3x3(i_m, 0, 0);
-			M3 m01 = ConvertTo3x3(i_m, 0, 1);
-			M3 m02 = ConvertTo3x3(i_m, 0, 2);
-			M3 m03 = ConvertTo3x3(i_m, 0, 3);
-			return
-				i_m.m[0][0] * GetDet3x3(m00) -
-				i_m.m[0][1] * GetDet3x3(m01) +
-				i_m.m[0][2] * GetDet3x3(m02) -
-				i_m.m[0][3] * GetDet3x3(m03);
-		}
-	}
 	using namespace Matrix;
 	class Matrix4x4
 	{
@@ -111,40 +34,15 @@ namespace Engine {
 			m.m[2][0] = i_col0.GetZ(); m.m[2][1] = i_col1.GetZ(); m.m[2][2] = i_col2.GetZ(); m.m[2][3] = i_col3.GetZ();
 			m.m[3][0] = i_col0.GetW(); m.m[3][1] = i_col1.GetW(); m.m[3][2] = i_col2.GetW(); m.m[3][3] = i_col3.GetW();
 		}
-		inline Matrix4x4 operator*(const Matrix4x4& m2) const {
-			Matrix4x4 r;
-			r.m.m[0][0] = m.m[0][0] * m2.m.m[0][0] + m.m[0][1] * m2.m.m[1][0] + m.m[0][2] * m2.m.m[2][0] + m.m[0][3] * m2.m.m[3][0];
-			r.m.m[0][1] = m.m[0][0] * m2.m.m[0][1] + m.m[0][1] * m2.m.m[1][1] + m.m[0][2] * m2.m.m[2][1] + m.m[0][3] * m2.m.m[3][1];
-			r.m.m[0][2] = m.m[0][0] * m2.m.m[0][2] + m.m[0][1] * m2.m.m[1][2] + m.m[0][2] * m2.m.m[2][2] + m.m[0][3] * m2.m.m[3][2];
-			r.m.m[0][3] = m.m[0][0] * m2.m.m[0][3] + m.m[0][1] * m2.m.m[1][3] + m.m[0][2] * m2.m.m[2][3] + m.m[0][3] * m2.m.m[3][3];
-
-			r.m.m[1][0] = m.m[1][0] * m2.m.m[0][0] + m.m[1][1] * m2.m.m[1][0] + m.m[1][2] * m2.m.m[2][0] + m.m[1][3] * m2.m.m[3][0];
-			r.m.m[1][1] = m.m[1][0] * m2.m.m[0][1] + m.m[1][1] * m2.m.m[1][1] + m.m[1][2] * m2.m.m[2][1] + m.m[1][3] * m2.m.m[3][1];
-			r.m.m[1][2] = m.m[1][0] * m2.m.m[0][2] + m.m[1][1] * m2.m.m[1][2] + m.m[1][2] * m2.m.m[2][2] + m.m[1][3] * m2.m.m[3][2];
-			r.m.m[1][3] = m.m[1][0] * m2.m.m[0][3] + m.m[1][1] * m2.m.m[1][3] + m.m[1][2] * m2.m.m[2][3] + m.m[1][3] * m2.m.m[3][3];
-
-			r.m.m[2][0] = m.m[2][0] * m2.m.m[0][0] + m.m[2][1] * m2.m.m[1][0] + m.m[2][2] * m2.m.m[2][0] + m.m[2][3] * m2.m.m[3][0];
-			r.m.m[2][1] = m.m[2][0] * m2.m.m[0][1] + m.m[2][1] * m2.m.m[1][1] + m.m[2][2] * m2.m.m[2][1] + m.m[2][3] * m2.m.m[3][1];
-			r.m.m[2][2] = m.m[2][0] * m2.m.m[0][2] + m.m[2][1] * m2.m.m[1][2] + m.m[2][2] * m2.m.m[2][2] + m.m[2][3] * m2.m.m[3][2];
-			r.m.m[2][3] = m.m[2][0] * m2.m.m[0][3] + m.m[2][1] * m2.m.m[1][3] + m.m[2][2] * m2.m.m[2][3] + m.m[2][3] * m2.m.m[3][3];
-
-			r.m.m[3][0] = m.m[3][0] * m2.m.m[0][0] + m.m[3][1] * m2.m.m[1][0] + m.m[3][2] * m2.m.m[2][0] + m.m[3][3] * m2.m.m[3][0];
-			r.m.m[3][1] = m.m[3][0] * m2.m.m[0][1] + m.m[3][1] * m2.m.m[1][1] + m.m[3][2] * m2.m.m[2][1] + m.m[3][3] * m2.m.m[3][1];
-			r.m.m[3][2] = m.m[3][0] * m2.m.m[0][2] + m.m[3][1] * m2.m.m[1][2] + m.m[3][2] * m2.m.m[2][2] + m.m[3][3] * m2.m.m[3][2];
-			r.m.m[3][3] = m.m[3][0] * m2.m.m[0][3] + m.m[3][1] * m2.m.m[1][3] + m.m[3][2] * m2.m.m[2][3] + m.m[3][3] * m2.m.m[3][3];
-
-			return r;
-		}
+		Matrix4x4 operator*(const Matrix4x4& m2) const;
+		inline Matrix4x4(const M4& i_m) : m(i_m) {}
 		~Matrix4x4() {}
 		const bool operator==(const Matrix4x4& i_rhs) const;
 		const bool operator!=(const Matrix4x4& i_rhs) const;
 		Vector4 operator*(const Vector4& i_rhs) const;
-
 		friend Matrix4x4 operator*(const Matrix4x4& i_matrix, const float i_scalar);
 		friend Matrix4x4 operator*(const float i_scalar, const Matrix4x4& i_matrix);
-		//friend Vector4 operator* (const Matrix4x4& i_matrix, const Vector4& i_point);
 
-		static const Matrix4x4 Identity;
 		static Matrix4x4 CreateScale(float i_x, float i_y, float i_z, float i_w = 1.0f);
 		static Matrix4x4 CreateXRotation(float i_theta);
 		static Matrix4x4 CreateYRotation(float i_theta);
@@ -153,15 +51,8 @@ namespace Engine {
 		static Matrix4x4 CreateTranslation(float i_x, float i_y, float i_z);
 		static Matrix4x4 CreateTranslation(Vector3 i_v);
 		static Matrix4x4 CreateTranslation(Vector2 i_v);
-		inline Matrix4x4 getTranspose() const {
-			Matrix4x4 r;
-			for (int i = 0; i < 4; i++) {
-				for (int j = 0; j < 4; j++) {
-					r.m._m[i * 4 + j] = m._m[j * 4 + i];
-				}
-			}
-			return r;
-		}
+		static M4 CreateTransformMatrix(const M3& i_m);
+		static bool IsValid(const M4& i_m);
 
 		Matrix4x4 getInverse() const;
 
@@ -177,20 +68,12 @@ namespace Engine {
 
 	};
 
-	inline Matrix4x4 operator*(const Matrix4x4& i_matrix, const float i_scalar)
-	{
-		Matrix4x4 r;
-		for (int i = 0; i < 16; i++) {
-			r.m._m[i] = i_matrix.m._m[i] * i_scalar;
-		}
-		return r;
+	inline Matrix4x4 operator*(const Matrix4x4& i_matrix, const float i_scalar){
+		return Matrix4x4(i_matrix.m * i_scalar);
 	}
-
-	inline Matrix4x4 operator*(const float i_scalar, const Matrix4x4& i_matrix)
-	{
+	inline Matrix4x4 operator*(const float i_scalar, const Matrix4x4& i_matrix){
 		return operator*(i_matrix, i_scalar);
 	}
-
 	/*
 	inline Vector4 operator*(const Matrix4x4& m, const Vector4& v) {
 		return Vector4(

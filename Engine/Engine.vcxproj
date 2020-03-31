@@ -190,6 +190,7 @@
     <ClInclude Include="JobRunner.h" />
     <ClInclude Include="JobSystem.h" />
     <ClInclude Include="json.hpp" />
+    <ClInclude Include="Matrix.h" />
     <ClInclude Include="Matrix4x4.h" />
     <ClInclude Include="Mutex.h" />
     <ClInclude Include="Numeric.h" />

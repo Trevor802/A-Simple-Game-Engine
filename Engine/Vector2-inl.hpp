@@ -36,6 +36,11 @@ inline float Vector2::SqrMagnitude() const
     return x * x + y * y;
 }
 
+inline const float Vector2::DotProduct(const Vector2& i_rhs) const
+{
+	return x * i_rhs.x + y * i_rhs.y;
+}
+
 inline Vector2 Vector2::Normalize() const
 {
     return Vector2( IsZero(x) ? 0 : x / Magnitude(), IsZero(y) ? 0 : y / Magnitude());
