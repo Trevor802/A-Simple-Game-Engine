@@ -13,6 +13,7 @@
 #include "RendererComponent.h"
 #include "PhysicsComponent.h"
 #include "CollisionManager.h"
+#include "Collider.h"
 #include "BoxCollider.h"
 #include "PlayerController.hpp"
 #include "MonsterController.hpp"
@@ -69,7 +70,8 @@ public:
 			string controllerName = o["controller"];
 
 			StrongPtr<GameObject> gameObject = StrongPtr<GameObject>(new GameObject(position, name));
-			gameObject->SetRotation(rot);
+			gameObject->transform->SetRotation(rot);
+			gameObject->transform->gameObject = gameObject;
 			gameObject->self = gameObject;
 			pWorld->AddNewGameObject(gameObject);
 			GLib::Sprites::Sprite* sprite = CreateSprite(spritePath.c_str(), size);
@@ -118,7 +120,7 @@ void TestKeyCallback(unsigned int i_VKeyID, bool bWentDown)
 	if (!bWentDown)
 		m_input = Vector2();
 	sprintf_s(Buffer, lenBuffer, "VKey 0x%04x went %s\n", i_VKeyID, bWentDown ? "down" : "up");
-	OutputDebugStringA(Buffer);
+	//OutputDebugStringA(Buffer);
 
 #endif // __DEBUG
 }
@@ -138,6 +140,7 @@ int WINAPI wWinMain(HINSTANCE i_hInstance, HINSTANCE i_hPrevInstance, LPWSTR i_l
 		{
 			StrongPtr<GameObject> pHero = StrongPtr<GameObject>(new GameObject(Vector2(-300, -200), "trevor"));
 			pHero->self = pHero;
+			pHero->transform->gameObject = pHero;
 			pWorld->AddNewGameObject(pHero);
 			pWorld->CheckNewGameObjects();
 			hero = pHero;

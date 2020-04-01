@@ -47,7 +47,9 @@ namespace Engine {
 			os << "(" << i_vec.m_x << "," << i_vec.m_y << "," << i_vec.m_z << ")";
 			return os;
 		}
-
+		inline Vector2 ToVector2() const {
+			return Vector2(m_x, m_y);
+		}
 
 	private:
 		float m_x;

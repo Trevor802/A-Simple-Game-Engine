@@ -13,9 +13,12 @@ GameObject::GameObject(void){
     
 }
 
+GameObject::GameObject(Vector2 i_position, const string i_name) : transform(new TransformComponent(i_position)), name(i_name)
+{
+}
+
 GameObject::~GameObject() {
 	Release();
-
 }
 
 void GameObject::Update(float DeltaTime) {

@@ -16,7 +16,8 @@ void MonsterController::Update(float DeltaTime){
     Vector2 dir = getMovingDirection();
     auto physicsComponent = gameObject->GetComponent<PhysicsComponent>();
     if (physicsComponent) {
-        physicsComponent->AddForce(dir * 1000.0f);
+        if (m_MovingStrategy != MovingStrategy::Static)
+            physicsComponent->AddForce(dir * 1000.0f);
     }
 }
 
@@ -25,16 +26,16 @@ Vector2 MonsterController::getMovingDirection()
     Vector2 dir;
     switch (m_MovingStrategy) {
     case MovingStrategy::ChaseTarget:
-        dir = m_Target->GetPosition() - gameObject->GetPosition();
+        dir = m_Target->transform->GetPosition() - gameObject->transform->GetPosition();
         dir.Normalize();
         break;
     case MovingStrategy::Random:
         dir = Vector2::RandDir();
         break;
     case MovingStrategy::Patrol:
-        if (gameObject->GetPosition().x > 200.0f)
+        if (gameObject->transform->GetPosition().x > 200.0f)
             dir = -1;
-        else if (gameObject->GetPosition().x < 160.0f)
+        else if (gameObject->transform->GetPosition().x < 160.0f)
             dir = 1;
         break;
     case MovingStrategy::Static:

@@ -6,7 +6,7 @@ void PhysicsComponent::Update(float DeltaTime)
 	// Update velocity
 	Velocity += Force / Mass * DeltaTime;
 	// Update position
-	gameObject->Move(Velocity * DeltaTime);
+	gameObject->transform->Move(Velocity * DeltaTime);
 	// Update force
 	// Clear force first
 	Force = Vector2();

@@ -70,8 +70,13 @@ public:
     static float Dot(const Vector2& i_lhs, const Vector2& i_rhs);
     
     bool clamp(const Vector2& min_v, const Vector2& max_v);
-    
+
+    friend Vector2 operator*(const float i_scalar, const Vector2& i_vec);
+
     friend std::ostream& operator<<(std::ostream& o, const Vector2 v);
 };
 
+inline Vector2 operator*(const float i_scalar, const Vector2& i_vec) {
+    return Vector2(i_scalar * i_vec.x, i_scalar * i_vec.y);
+}
 #include "Vector2-inl.hpp"

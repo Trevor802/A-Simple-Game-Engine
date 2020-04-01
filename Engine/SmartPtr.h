@@ -28,8 +28,8 @@ public:
 
 	void operator=(std::nullptr_t i_nullptr);
 
-	inline T* operator->();
-	inline T& operator*();
+	inline T* operator->() const;
+	inline T& operator*() const;
 	inline T& Acquire() const;
 	inline operator bool() const;
 	template<typename U>
@@ -45,7 +45,7 @@ template<typename T>
 class WeakPtr
 {
 public:
-	explicit WeakPtr(T* i_ptr = nullptr){}
+	explicit WeakPtr(T* i_ptr = nullptr) : m_ptr(nullptr), m_pRefCounter(new RefCounter(0, 1)){}
 
 	WeakPtr(const StrongPtr<T>& i_other);
 
@@ -60,19 +60,23 @@ public:
 	WeakPtr& operator=(const WeakPtr<T>& i_other);
 
 	WeakPtr& operator=(WeakPtr<T>&& i_other);
+	template <typename U>
+	WeakPtr<U>& Cast() {
+		return *(reinterpret_cast<WeakPtr<U>*>(this));
+	}
 
 	template<typename T>
 	friend class StrongPtr;
 
 	void operator=(std::nullptr_t i_nullptr);
 
-	inline T* operator->();
-	inline T& operator*();
-	inline T& Acquire() const;
+	inline T* operator->() const;
+	inline T& operator*() const;
 	inline operator bool() const;
 	inline bool IsValid() const;
 	template<typename U>
 	inline bool operator==(const WeakPtr<U>& i_other) const;
+	
 
 private:
 	inline void Release();

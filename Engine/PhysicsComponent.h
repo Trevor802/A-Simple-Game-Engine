@@ -16,7 +16,7 @@ public:
 	bool bUseGravity = false;
 	float DragCoefficient = .1f;
 	float Inertia = .1f;
-	float Mass = 10;
+	float Mass = 30;
 
 private:
 	const float Gravity = -49.0f;

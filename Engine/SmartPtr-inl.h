@@ -12,10 +12,10 @@ template<typename U>
 inline bool StrongPtr<T>::operator==(const StrongPtr<U>& i_other) const { return m_ptr == i_other.m_ptr; }
 
 template<typename T>
-inline T* StrongPtr<T>::operator->() { return m_ptr; }
+inline T* StrongPtr<T>::operator->() const { return m_ptr; }
 
 template<typename T>
-inline T& StrongPtr<T>::operator*() {
+inline T& StrongPtr<T>::operator*() const {
 	return Acquire();
 }
 
@@ -50,22 +50,17 @@ inline bool WeakPtr<T>::IsValid() const {
 }
 
 template<typename T>
-inline T* WeakPtr<T>::operator->() { return m_ptr; }
+inline T* WeakPtr<T>::operator->() const { return m_ptr; }
 
 template<typename T>
-inline T& WeakPtr<T>::operator*() {
-	return Acquire();
-}
-
-template<typename T>
-inline T& WeakPtr<T>::Acquire() const {
+inline T& WeakPtr<T>::operator*() const {
 	assert(m_ptr != nullptr);
 	return *m_ptr;
 }
 
 template<typename T>
 inline void WeakPtr<T>::Release() {
-	if (!m_pRefCounter) return;
+	if (m_pRefCounter == NULL) return;
 	assert(m_pRefCounter->WeakRefCount > 0);
 	m_pRefCounter->WeakRefCount--;
 }
